@@ -72,7 +72,7 @@ public class FileUploadServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         String topPart = "<!DOCTYPE html><html><body><ul>";
         String bottomPart = "</ul></body></html>";        
-        out.println(topPart+getListing("/Library/tomcat/webapps/photogallery/images")+bottomPart);
+        out.println(topPart+getListing(System.getProperty("catalina.base") + "/webapps/photogallery/images")+bottomPart);
     }
 
     private String getListing(String path) {
