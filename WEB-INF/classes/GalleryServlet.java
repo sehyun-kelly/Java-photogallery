@@ -53,7 +53,7 @@ public class GalleryServlet extends HttpServlet {
 		HttpSession session = req.getSession(false);
 
 		if (session == null || !req.isRequestedSessionIdValid()) {
-			return false;gi
+			return false;
 		}else{
 			return true;
 		}
