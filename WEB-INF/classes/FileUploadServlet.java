@@ -73,10 +73,11 @@ public class FileUploadServlet extends HttpServlet {
             return;
         }
         try {
-            LocalReader lc = new LocalReader();
-            lc.readFile(System.getProperty("catalina.base") + "/webapps/photogallery/values/values.json");
+//            LocalReader lc = new LocalReader();
+//            lc.readFile(System.getProperty("catalina.base") + "/webapps/photogallery/values/values.json");
+//            con = DriverManager.getConnection(lc.getUrl(), lc.getUser(), lc.getPassword());
 
-            con = DriverManager.getConnection(lc.getUrl(), lc.getUser(), lc.getPassword());
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "root", "nopassword");
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
