@@ -11,7 +11,6 @@ import java.util.*;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
@@ -23,6 +22,7 @@ public class FileUploadServlet extends HttpServlet {
             response.sendRedirect("login");
 
         } else {
+            String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
             PrintWriter writer = response.getWriter();
             writer.append("<!DOCTYPE html>\r\n")
                     .append("<html>\r\n")
@@ -30,6 +30,9 @@ public class FileUploadServlet extends HttpServlet {
                     .append("        <title>File Upload Form</title>\r\n")
                     .append("    </head>\r\n")
                     .append("    <body>\r\n");
+            writer.append("<div style=\"text-align: right;\">\n")
+                    .append(loginMsg)
+                    .append("\n</div>");
             writer.append("<h1>Upload file</h1>\r\n");
             writer.append("<form method=\"POST\" action=\"upload\" ")
                     .append("enctype=\"multipart/form-data\">\r\n");
