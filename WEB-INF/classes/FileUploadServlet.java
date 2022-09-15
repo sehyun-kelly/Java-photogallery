@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import java.io.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.*;
 
 @MultipartConfig
@@ -63,7 +64,7 @@ public class FileUploadServlet extends HttpServlet {
             return;
         }
 
-        if (formDate.equals("")) formDate = "2020-10-10";
+        if (formDate.equals("")) formDate = String.valueOf(LocalDate.now());
         if (captionName.equals("")) captionName = "No caption";
         String localPath = System.getProperty("catalina.base") + "/webapps/photogallery/images/" + fileName;
         filePart.write(localPath);
