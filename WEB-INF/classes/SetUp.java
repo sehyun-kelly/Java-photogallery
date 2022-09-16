@@ -1,15 +1,16 @@
 import java.sql.*;
 
 public class SetUp {
-    public static void main(String[] args) {
-        Connection con;
+    private SetUp() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (Exception ex) {
             System.out.println("Message: " + ex.getMessage());
         }
+    }
+    public static void main(String[] args) {
         try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306", "comp3940", "");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306", "comp3940", "");
 
             Statement s = con.createStatement();
             s.executeUpdate("create schema if not exists comp3940;");

@@ -21,7 +21,6 @@ public class FileUploadServlet extends HttpServlet {
         if (!isLoggedIn) {
             response.setStatus(302);
             response.sendRedirect("login");
-
         } else {
             String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
             PrintWriter writer = response.getWriter();
@@ -48,7 +47,6 @@ public class FileUploadServlet extends HttpServlet {
         }
     }
 
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -69,39 +67,41 @@ public class FileUploadServlet extends HttpServlet {
         String localPath = System.getProperty("catalina.base") + "/webapps/photogallery/images/" + fileName;
         filePart.write(localPath);
 
-        Connection con = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (Exception ex) {
-            System.out.println("Message: " + ex.getMessage());
-            return;
-        }
-        try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
-            PreparedStatement preparedStatement = con.prepareStatement(
-                    "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
-            preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
-            preparedStatement.setBytes(2, UuidGenerator.asBytes(UUID.randomUUID()));
-            preparedStatement.setString(4, fileName);
-            preparedStatement.setString(5, captionName);
-            preparedStatement.setString(6, formDate);
-            try {
-                FileInputStream fin = new FileInputStream(localPath);
-                preparedStatement.setBinaryStream(3, fin);
-            } catch (Exception ex) {
-                System.out.println("Message: " + ex.getMessage());
-            }
-            int row = preparedStatement.executeUpdate();
-            preparedStatement.close();
-        } catch (Exception e) {
-            System.out.println("Message: " + e.getMessage());
-        }
+        writeToDatabase(fileName, captionName, formDate, localPath);
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         String topPart = "<!DOCTYPE html><html><body><ul>";
         String bottomPart = "</ul></body></html>";
         out.println(topPart + getListing(System.getProperty("catalina.base") + "/webapps/photogallery/images") + bottomPart);
+    }
+
+    public void writeToDatabase(String fileName, String captionName, String formDate, String localPath) {
+        Connection con;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (Exception ex) {
+            System.out.println("Upload/Class: " + ex.getMessage());
+        }
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+
+            PreparedStatement preparedStatement = con.prepareStatement(
+                    "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
+            FileInputStream fin = new FileInputStream(localPath);
+
+            preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
+            preparedStatement.setBytes(2, null);
+            preparedStatement.setBinaryStream(3, fin);
+            preparedStatement.setString(4, fileName);
+            preparedStatement.setString(5, captionName);
+            preparedStatement.setString(6, formDate);
+
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (Exception e) {
+            System.out.println("Upload/WriteToDatabase: " + e.getMessage());
+        }
     }
 
     private String getListing(String path) {
@@ -117,16 +117,10 @@ public class FileUploadServlet extends HttpServlet {
         return dirList;
     }
 
-
     private boolean isLoggedIn(HttpServletRequest req) {
         HttpSession session = req.getSession(false);
 
-        if (session == null || !req.isRequestedSessionIdValid()) {
-            return false;
-        } else {
-            return true;
-        }
-
+        return session != null && req.isRequestedSessionIdValid();
     }
 
 }
