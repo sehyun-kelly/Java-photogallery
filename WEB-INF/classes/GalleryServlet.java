@@ -5,7 +5,7 @@ import java.sql.*;
 
 public class GalleryServlet extends HttpServlet {
   private int mCount;
- 
+
   public void doGet(HttpServletRequest request,
       HttpServletResponse response)
       throws ServletException, IOException {
@@ -34,13 +34,6 @@ public class GalleryServlet extends HttpServlet {
 
           PrintWriter out = response.getWriter();
 
-          File dir = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images");
-          String[] chld = dir.list();
-          String img_src = chld[0];
-          String alt_text = "SOME IMAGE";
-
-
-
           out.println("<html>");
           out.println("<head>");
           out.println("<meta charset='UTF-8'>");
@@ -58,13 +51,14 @@ public class GalleryServlet extends HttpServlet {
           out.println("<form action='/photogallery/image' method='GET'>");
           out.println("<div>");
 
-          byte b[];
-          Blob blob = null;
-          int i = 0;
-
           String caption = "NONE RETRIEVED";
           String date = "NO DATE";
           String fileName = "";
+          String alt_text = "";
+
+          byte b[];
+          Blob blob = null;
+          int i = 0;
 
           while(rs.next()){
               caption = rs.getString("caption");
@@ -100,15 +94,12 @@ public class GalleryServlet extends HttpServlet {
           out.println("</form>");
           out.println("</body></html>");
 
-
           out.close();
           stmt.close();
           con.close();
       }catch(Exception e){
           e.printStackTrace();
       }
-      
-
    }
    
    private boolean isLoggedIn(HttpServletRequest req) {
