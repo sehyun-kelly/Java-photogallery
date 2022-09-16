@@ -1,41 +1,92 @@
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import java.sql.*;
+
 public class GalleryServlet extends HttpServlet {
   private int mCount;
  
   public void doGet(HttpServletRequest request,
       HttpServletResponse response)
       throws ServletException, IOException {
-      
-	if (!isLoggedIn(request)) { 
-		response.setStatus(302);
-		response.sendRedirect("login");
-	}
-      
-      response.setContentType("text/html");
-      response.setCharacterEncoding("UTF-8");
-      File dir = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images");
-      String[] chld = dir.list();
-     // instead of hardcoding to the first image in the list as done below
-     //save search criteria as session variable and use it to filter the files in the above array
-      //check if prev or next button pressed and then rotate through the array accordingly
-     
+      try {
+          Class.forName("com.mysql.cj.jdbc.Driver");
+      } catch (Exception ex) {
+          System.out.println("Gallery/Class: " + ex.getMessage());
+      }
+      try{
+          Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+          Statement stmt = con.createStatement();
+          ResultSet rs = stmt.executeQuery("select * from Photos");
 
-	String img_src = chld[0]; 
-        String alt_text = "SOME IMAGE";	 
-      PrintWriter out = response.getWriter();
-      out.println("<html>");
+          response.setContentType("text/html");
+          response.setCharacterEncoding("UTF-8");
+          String username = "";
+
+          if (!isLoggedIn(request)) {
+              response.setStatus(302);
+              response.sendRedirect("login");
+          }else{
+              username = request.getParameter("user_id");
+          }
+
+          PrintWriter out = response.getWriter();
+
+          File dir = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images");
+          String[] chld = dir.list();
+          String img_src = chld[0];
+          String alt_text = "SOME IMAGE";
+
+
+
+          out.println("<html>");
+          out.println("<head>");
           out.println("<meta charset='UTF-8'>");
+          out.println("<style>");
+          out.println("#username {");
+          out.println("text-align: right;");
+          out.println("color: red;");
+          out.println("}");
+          out.println("</style>");
+          out.println("</head>");
           out.println("<body>");
+
           out.println("<div>");
-          out.println("<form action='/photogallery/gallery' method='GET'>");
+          out.println("<div id=\"username\">" + username + "</div>");
+          out.println("<form action='/photogallery/image' method='GET'>");
           out.println("<div>");
-          
-          out.println("<img id = \"img_src\" src=./images/" + img_src + " alt=" + alt_text + " width=200 height=150>");
-          out.println("<div>");
+
+          byte b[];
+          Blob blob = null;
+          int i = 0;
+
+          String caption = "NONE RETRIEVED";
+          String date = "NO DATE";
+          String fileName = "";
+
+          while(rs.next()){
+              caption = rs.getString("caption");
+              date = String.valueOf(rs.getDate("dateTaken"));
+              fileName = rs.getString("fileName");
+              blob = rs.getBlob("picture");
+
+              File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileName);
+              FileOutputStream fs = new FileOutputStream(f);
+              b = blob.getBytes(1, (int)blob.length());
+              fs.write(b);
+
+              alt_text = "img num " + i;
+
+              out.println("<img id = \"img_src\" src=./images/" + fileName + " alt=" + alt_text + " width=200 height=150>");
+              out.println("<br>");
+              out.println("<span>" + caption +"</span>");
+              out.println("<br>");
+              out.println("<span>"+ date + "<span>");
+              out.println("<div>");
+              i++;
+          }
           out.println("<br>");
-          out.println("<div class='button'>");          
+          out.println("<div class='button'>");
           out.println("<button class='button' id='prev'>Prev</button>");
           out.println("<button class='button' id='next'>Next</button>");
           out.println("</div></div><br>");
@@ -46,7 +97,16 @@ public class GalleryServlet extends HttpServlet {
           out.println("</div><br>");
           out.println("</form>");
           out.println("</body></html>");
+
+
           out.close();
+          stmt.close();
+          con.close();
+      }catch(Exception e){
+          e.printStackTrace();
+      }
+      
+
    }
    
    private boolean isLoggedIn(HttpServletRequest req) {
@@ -60,3 +120,4 @@ public class GalleryServlet extends HttpServlet {
 
 	}
 }
+
