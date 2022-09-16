@@ -73,7 +73,7 @@ public class FileUploadServlet extends HttpServlet {
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        String topPart = "<!DOCTYPE html><html><body><ul>";
+        String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div><ul>";
         String bottomPart = "</ul></body></html>";
         out.println(topPart + getListing(System.getProperty("catalina.base") + "/webapps/photogallery/images") + bottomPart);
     }
@@ -102,11 +102,44 @@ public class FileUploadServlet extends HttpServlet {
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (Exception e) {
-            System.out.println("Upload/WriteToDatabase: " + e.getMessage());
+            System.out.println("Upload/writeToDatabase: " + e.getMessage());
         }
     }
 
     public byte[] getUuid(String userId) {
+        Connection con;
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+
+            PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
+            s.setString(1, userId);
+
+            ResultSet rs = s.executeQuery();
+            if (!rs.next()) {
+                return null;
+            }
+            return rs.getBytes("id");
+        } catch (Exception e) {
+            System.out.println("Upload/getUuid: " + e.getMessage());
+        }
+        return null;
+    }
+
+    private String getListing(String path) {
+        File dir = new File(path);
+        String[] chld = dir.list();
+
+        if (chld == null) return "No files found";
+
+        String dirList = "Files you have posted:";
+        for (String s : chld) {
+            if (checkPoster(s))
+                dirList += "<li>" + s + "</li>";
+        }
+        return dirList;
+    }
+
+    private boolean checkPoster(String fileName) {
         Connection con;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -116,32 +149,50 @@ public class FileUploadServlet extends HttpServlet {
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
 
-            Statement s = con.createStatement();
-            ResultSet rs = s.executeQuery("SELECT * FROM Users " +
-                    "WHERE userId == '" +
-                    userId + "';");
-            s.close();
-            if (!rs.next()) {
-                return null;
+            PreparedStatement s = con.prepareStatement("SELECT userId FROM Photos WHERE userId = ?;");
+            s.setString(1, fileName);
+
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {
+                if (checkUsername(rs.getBytes("userId"))){
+                    return true;
+                }
             }
-            return rs.getBytes("id");
+            return false;
         } catch (Exception e) {
-            System.out.println("Upload/WriteToDatabase: " + e.getMessage());
+            System.out.println("Upload/checkPoster: " + e.getMessage());
         }
-        return null;
+        return false;
     }
 
-    private String getListing(String path) {
-        String dirList = null;
-        File dir = new File(path);
-        String[] chld = dir.list();
-        for (int i = 0; i < chld.length; i++) {
-            if ((new File(path + chld[i])).isDirectory())
-                dirList += "<li><button type=\"button\">" + chld[i] + "</button></li>";
-            else
-                dirList += "<li>" + chld[i] + "</li>";
+    private boolean checkUsername(byte[] uuid) {
+        //Remove this line when login is fully developed
+        if (uuid == null) {
+            return true;
         }
-        return dirList;
+
+        Connection con;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (Exception ex) {
+            System.out.println("Upload/Class: " + ex.getMessage());
+        }
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+
+            PreparedStatement s = con.prepareStatement("SELECT userId FROM Users WHERE id = ?;");
+            s.setBytes(1, uuid);
+
+            ResultSet rs = s.executeQuery();
+            if (!rs.next()) {
+                return false;
+            }
+            String username = rs.getString("userId");
+            return username.equals(currentUser);
+        } catch (Exception e) {
+            System.out.println("Upload/checkUsername: " + e.getMessage());
+        }
+        return false;
     }
 
     private boolean isLoggedIn(HttpServletRequest req) {
@@ -149,7 +200,4 @@ public class FileUploadServlet extends HttpServlet {
 
         return session != null && req.isRequestedSessionIdValid();
     }
-
 }
-
-
