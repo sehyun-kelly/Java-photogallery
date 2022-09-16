@@ -30,6 +30,8 @@ public class GalleryServlet extends HttpServlet {
               username = request.getParameter("user_id");
           }
 
+          String loginMsg = "Logged in as: " + username;
+
           PrintWriter out = response.getWriter();
 
           File dir = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images");
@@ -52,7 +54,7 @@ public class GalleryServlet extends HttpServlet {
           out.println("<body>");
 
           out.println("<div>");
-          out.println("<div id=\"username\">" + username + "</div>");
+          out.println("<div id=\"username\">" + loginMsg + "</div>");
           out.println("<form action='/photogallery/image' method='GET'>");
           out.println("<div>");
 
