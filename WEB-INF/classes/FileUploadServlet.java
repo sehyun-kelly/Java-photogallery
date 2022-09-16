@@ -12,6 +12,7 @@ import java.util.*;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
+    private String currentUser;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
@@ -22,6 +23,7 @@ public class FileUploadServlet extends HttpServlet {
             response.setStatus(302);
             response.sendRedirect("login");
         } else {
+            currentUser = session.getAttribute("USER_ID").toString();
             String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
             PrintWriter writer = response.getWriter();
             writer.append("<!DOCTYPE html>\r\n")
@@ -91,7 +93,7 @@ public class FileUploadServlet extends HttpServlet {
             FileInputStream fin = new FileInputStream(localPath);
 
             preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
-            preparedStatement.setBytes(2, null);
+            preparedStatement.setBytes(2, getUuid(currentUser));
             preparedStatement.setBinaryStream(3, fin);
             preparedStatement.setString(4, fileName);
             preparedStatement.setString(5, captionName);
@@ -102,6 +104,31 @@ public class FileUploadServlet extends HttpServlet {
         } catch (Exception e) {
             System.out.println("Upload/WriteToDatabase: " + e.getMessage());
         }
+    }
+
+    public byte[] getUuid(String userId) {
+        Connection con;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (Exception ex) {
+            System.out.println("Upload/Class: " + ex.getMessage());
+        }
+        try {
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+
+            Statement s = con.createStatement();
+            ResultSet rs = s.executeQuery("SELECT * FROM Users " +
+                    "WHERE userId == '" +
+                    userId + "';");
+            s.close();
+            if (!rs.next()) {
+                return null;
+            }
+            return rs.getBytes("id");
+        } catch (Exception e) {
+            System.out.println("Upload/WriteToDatabase: " + e.getMessage());
+        }
+        return null;
     }
 
     private String getListing(String path) {
