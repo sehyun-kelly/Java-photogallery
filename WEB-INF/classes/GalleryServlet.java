@@ -4,8 +4,10 @@ import javax.servlet.http.*;
 import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class GalleryServlet extends HttpServlet {
+    private int count = 0;
   private int numRows;
   private ArrayList<Blob> pictureList = new ArrayList<>();
   private ArrayList<String> fileList = new ArrayList<>();
@@ -42,6 +44,17 @@ public class GalleryServlet extends HttpServlet {
 
           PrintWriter out = response.getWriter();
 
+          //when next is clicked
+          if(request.getParameter("prev") == null && request.getParameter("next") != null && (numRows - 1) >= count){
+              if((numRows - 1) > count) count++;
+              else if(numRows - 1 == count) count = 0;
+          }
+          //when prev is clicked
+          else if(request.getParameter("prev") != null && request.getParameter("next") == null && count >= 0){
+              if(count > 0) count--;
+              else if(count == 0) count = numRows - 1;
+          }
+
           out.println("<html>");
           out.println("<head>");
           out.println("<meta charset='UTF-8'>");
@@ -59,27 +72,27 @@ public class GalleryServlet extends HttpServlet {
 
           out.println("<div>");
 
-//          displayPhoto(idList.get(0), out);
-
-          File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileList.get(0));
+          File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileList.get(count));
           FileOutputStream fs = new FileOutputStream(f);
-          byte b[] = pictureList.get(0).getBytes(1, (int)pictureList.get(0).length());
+          byte b[] = pictureList.get(count).getBytes(1, (int)pictureList.get(count).length());
           fs.write(b);
 
-          out.println("<img id = \"img-0\"   src=./images/" + fileList.get(0) + " alt=\"image\" width=200 height=150>");
+          out.println("<img id = \"img-0\"   src=./images/" + fileList.get(count) + " alt=\"image\" width=200 height=150>");
           out.println("<br>");
-          out.println("<span id = \"caption-0\"  =>" + captionList.get(0) +"</span>");
+          out.println("<span id = \"caption-0\"  =>" + captionList.get(count) +"</span>");
           out.println("<br>");
-          out.println("<span id = \"date-0\" >"+ dateList.get(0) + "<span>");
+          out.println("<span id = \"date-0\" >"+ dateList.get(count) + "<span>");
           out.println("<div>");
           out.println("<br>");
           out.println("<div class='button'>");
-          out.println("<button class='button' id='prev'>Prev</button>");
-          out.println("<button class='button' id='next'>Next</button>");
+          out.println("<form action='gallery' method='get' id='buttonForm'>");
+          out.println("<input type='submit' form='buttonForm' class='button' id='prev' name='prev' value='Prev'></input>");
+          out.println("<input type='submit' form='buttonForm' class='button' id='next' name='next' value='Next'></input>");
+          out.println("</form>");
           out.println("</div></div><br>");
 
           out.println("<div>");
-          out.println("<form action='main' method='GET'>");
+          out.println("<form action='main' method='post'>");
           out.println("<button class='button' id='main'>Main</button>");
           out.println("</div><br>");
           out.println("</form>");
@@ -92,7 +105,7 @@ public class GalleryServlet extends HttpServlet {
           e.printStackTrace();
       }
    }
-   
+
    private boolean isLoggedIn(HttpServletRequest req) {
 		HttpSession session = req.getSession(false);
 
@@ -135,49 +148,5 @@ public class GalleryServlet extends HttpServlet {
 
     }
 
-    public void displayPhoto(Blob id, PrintWriter out){
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (Exception ex) {
-            System.out.println("Gallery/Class: " + ex.getMessage());
-        }
-        try{
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
-            PreparedStatement stmt = con.prepareStatement("select * from Photos where id = ?");
-            stmt.setBlob(1, id);
-
-            ResultSet rs = stmt.executeQuery();
-
-            String fileName = "";
-            String caption = "";
-            String date = "";
-            Blob blob;
-
-            while(rs.next()){
-                fileName = rs.getString("fileName");
-                caption = rs.getString("caption");
-                date = String.valueOf(rs.getDate("dateTaken"));
-                blob = rs.getBlob("picture");
-
-                File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileName);
-                FileOutputStream fs = new FileOutputStream(f);
-                byte b[] = blob.getBytes(1, (int)blob.length());
-                fs.write(b);
-
-                out.println("<img id = \"img_src\" src=./images/" + fileName + " alt=\"image\" width=200 height=150>");
-                out.println("<br>");
-                out.println("<span>" + caption +"</span>");
-                out.println("<br>");
-                out.println("<span>"+ date + "<span>");
-                out.println("<div>");
-            }
-
-            stmt.close();
-            con.close();
-        }catch(Exception e){
-            System.out.println("gallery/displayPhoto: " + e.getMessage());
-        }
-
-    }
 }
 
