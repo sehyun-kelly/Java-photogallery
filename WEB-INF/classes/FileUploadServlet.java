@@ -12,7 +12,7 @@ import java.util.*;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
-    private String currentUser;
+    private static String currentUser;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
@@ -149,7 +149,7 @@ public class FileUploadServlet extends HttpServlet {
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
 
-            PreparedStatement s = con.prepareStatement("SELECT userId FROM Photos WHERE userId = ?;");
+            PreparedStatement s = con.prepareStatement("SELECT userId FROM Photos WHERE fileName = ?;");
             s.setString(1, fileName);
 
             ResultSet rs = s.executeQuery();
@@ -166,11 +166,6 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     private boolean checkUsername(byte[] uuid) {
-        //Remove this line when login is fully developed
-        if (uuid == null) {
-            return true;
-        }
-
         Connection con;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
