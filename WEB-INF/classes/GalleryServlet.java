@@ -43,17 +43,23 @@ public class GalleryServlet extends HttpServlet {
           String loginMsg = "Logged in as: " + username;
 
           PrintWriter out = response.getWriter();
+          String button = request.getParameter("button");
 
           //when next is clicked
-          if(request.getParameter("prev") == null && request.getParameter("next") != null && (numRows - 1) >= count){
+          if(Objects.equals(button,"Next")){
               if((numRows - 1) > count) count++;
               else if(numRows - 1 == count) count = 0;
           }
           //when prev is clicked
-          else if(request.getParameter("prev") != null && request.getParameter("next") == null && count >= 0){
+          else if(Objects.equals(button,"Prev")){
               if(count > 0) count--;
               else if(count == 0) count = numRows - 1;
           }
+
+          File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileList.get(count));
+          FileOutputStream fs = new FileOutputStream(f);
+          byte b[] = pictureList.get(count).getBytes(1, (int)pictureList.get(count).length());
+          fs.write(b);
 
           out.println("<html>");
           out.println("<head>");
@@ -66,33 +72,29 @@ public class GalleryServlet extends HttpServlet {
           out.println("</style>");
           out.println("</head>");
           out.println("<body>");
-
           out.println("<div>");
           out.println("<div id=\"username\">" + loginMsg + "</div>");
-
           out.println("<div>");
-
-          File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileList.get(count));
-          FileOutputStream fs = new FileOutputStream(f);
-          byte b[] = pictureList.get(count).getBytes(1, (int)pictureList.get(count).length());
-          fs.write(b);
-
-          out.println("<img id = \"img-0\"   src=./images/" + fileList.get(count) + " alt=\"image\" width=200 height=150>");
+          out.println("<img id = \"img-" + count + "\"   src=./images/" + fileList.get(count) + " alt=\"image\" width=200 height=150>");
           out.println("<br>");
-          out.println("<span id = \"caption-0\"  =>" + captionList.get(count) +"</span>");
+          out.println("<span id = \"caption-" + count + "\"  =>" + captionList.get(count) +"</span>");
           out.println("<br>");
-          out.println("<span id = \"date-0\" >"+ dateList.get(count) + "<span>");
+          out.println("<span id = \"date-" + count + "\" >"+ dateList.get(count) + "<span>");
           out.println("<div>");
           out.println("<br>");
           out.println("<div class='button'>");
           out.println("<form action='gallery' method='get' id='buttonForm'>");
-          out.println("<input type='submit' form='buttonForm' class='button' id='prev' name='prev' value='Prev'></input>");
-          out.println("<input type='submit' form='buttonForm' class='button' id='next' name='next' value='Next'></input>");
+          out.println("<input type='submit' form='buttonForm' id='prev' name='button' value='Prev'></input>");
+          out.println("<input type='submit' form='buttonForm' id='next' name='button' value='Next'></input>");
           out.println("</form>");
+//          out.println("<form action='gallery' method='post' id='autoForm'>");
+//          out.println("<input type='submit' form='autoForm' class='button' id='auto' name='auto' value='Auto'></input>");
+//          out.println("<input type='submit' form='autoForm' class='button' id='stop' name='stop' value='Stop'></input>");
+//          out.println("</form>");
           out.println("</div></div><br>");
 
           out.println("<div>");
-          out.println("<form action='main' method='post'>");
+          out.println("<form action='main' method='get'>");
           out.println("<button class='button' id='main'>Main</button>");
           out.println("</div><br>");
           out.println("</form>");
