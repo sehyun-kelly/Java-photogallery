@@ -1,7 +1,6 @@
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -9,10 +8,10 @@ import java.util.Objects;
 public class GalleryServlet extends HttpServlet {
     private int count = 0;
   private int numRows;
-  private ArrayList<Blob> pictureList = new ArrayList<>();
-  private ArrayList<String> fileList = new ArrayList<>();
-  private ArrayList<String> captionList = new ArrayList<>();
-  private ArrayList<String> dateList = new ArrayList<>();
+  private ArrayList<Blob> pictureList;
+  private ArrayList<String> fileList;
+  private ArrayList<String> captionList;
+  private ArrayList<String> dateList;
 
   public void doGet(HttpServletRequest request,
       HttpServletResponse response)
@@ -116,10 +115,14 @@ public class GalleryServlet extends HttpServlet {
 		}else{
 			return true;
 		}
-
 	}
 
     public void getDataFromDB(){
+      pictureList = new ArrayList<>();
+      fileList = new ArrayList<>();
+      captionList = new ArrayList<>();
+      dateList = new ArrayList<>();
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (Exception ex) {
