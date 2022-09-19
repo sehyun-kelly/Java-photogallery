@@ -24,10 +24,6 @@ public class GalleryServlet extends HttpServlet {
           System.out.println("Gallery/Class: " + ex.getMessage());
       }
       try{
-          Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
-          Statement stmt = con.createStatement();
-          ResultSet rs = stmt.executeQuery("select * from Photos");
-
           response.setContentType("text/html");
           response.setCharacterEncoding("UTF-8");
           String username = "";
@@ -44,13 +40,10 @@ public class GalleryServlet extends HttpServlet {
           PrintWriter out = response.getWriter();
           String button = request.getParameter("button");
 
-          //when next is clicked
           if(Objects.equals(button,"Next")){
               if((numRows - 1) > count) count++;
               else if(numRows - 1 == count) count = 0;
-          }
-          //when prev is clicked
-          else if(Objects.equals(button,"Prev")){
+          }else if(Objects.equals(button,"Prev")){
               if(count > 0) count--;
               else if(count == 0) count = numRows - 1;
           }
@@ -73,23 +66,26 @@ public class GalleryServlet extends HttpServlet {
           out.println("<body>");
           out.println("<div>");
           out.println("<div id=\"username\">" + loginMsg + "</div>");
-          out.println("<div>");
-          out.println("<img id = \"img-" + count + "\"   src=./images/" + fileList.get(count) + " alt=\"image\" width=200 height=150>");
-          out.println("<br>");
-          out.println("<span id = \"caption-" + count + "\"  =>" + captionList.get(count) +"</span>");
-          out.println("<br>");
-          out.println("<span id = \"date-" + count + "\" >"+ dateList.get(count) + "<span>");
-          out.println("<div>");
+
+          for(int i = 0; i < numRows; i++){
+              if(i == count) out.println("<div id='gallery_" + i + "' class='currentView'>");
+              else out.println("<div id='gallery_" + i + "' hidden>");
+              out.println("<img id = \"img-" + i + "\"   src=./images/" + fileList.get(i) + " alt=\"image\" width=400 height=300>");
+              out.println("<br>");
+              out.println("<span id = \"caption-" + i + "\"  =>" + captionList.get(i) +"</span>");
+              out.println("<br>");
+              out.println("<span id = \"date-" + i + "\" >"+ dateList.get(i) + "</span>");
+              out.println("</div>");
+          }
+
           out.println("<br>");
           out.println("<div class='button'>");
           out.println("<form action='gallery' method='get' id='buttonForm'>");
           out.println("<input type='submit' form='buttonForm' id='prev' name='button' value='Prev'></input>");
           out.println("<input type='submit' form='buttonForm' id='next' name='button' value='Next'></input>");
           out.println("</form>");
-//          out.println("<form action='gallery' method='post' id='autoForm'>");
-//          out.println("<input type='submit' form='autoForm' class='button' id='auto' name='auto' value='Auto'></input>");
-//          out.println("<input type='submit' form='autoForm' class='button' id='stop' name='stop' value='Stop'></input>");
-//          out.println("</form>");
+          out.println("<button type='button' id='auto'>Auto</button>");
+          out.println("<button type='button' id='stop'>Stop</button>");
           out.println("</div></div><br>");
 
           out.println("<div>");
@@ -97,11 +93,11 @@ public class GalleryServlet extends HttpServlet {
           out.println("<button class='button' id='main'>Main</button>");
           out.println("</div><br>");
           out.println("</form>");
-          out.println("</body></html>");
+          writeScript(out);
+          out.println("</body>");
+          out.println("</html>");
 
           out.close();
-          stmt.close();
-          con.close();
       }catch(Exception e){
           e.printStackTrace();
       }
@@ -133,7 +129,7 @@ public class GalleryServlet extends HttpServlet {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("select * from Photos");
 
-            Blob blob = null;
+            Blob blob;
             numRows = 0;
 
             while(rs.next()){
@@ -153,5 +149,28 @@ public class GalleryServlet extends HttpServlet {
 
     }
 
+    public void writeScript(PrintWriter out){
+        out.println("<script>");
+        out.println("let myInterval;");
+        out.println("function submitNext(){");
+        out.println("let currentView = document.querySelector('.currentView');");
+        out.println("let currentIndex = currentView.getAttribute('id').split('_')[1];");
+        out.println("let nextIndex;");
+        out.println("if(currentIndex == " + (numRows - 1) +") nextIndex = 0;");
+        out.println("else nextIndex = ++currentIndex;");
+        out.println("currentView.setAttribute('hidden','');");
+        out.println("currentView.removeAttribute('class');");
+        out.println("document.getElementById('gallery_' + nextIndex).removeAttribute('hidden');");
+        out.println("document.getElementById('gallery_' + nextIndex).setAttribute('class', 'currentView');");
+        out.println("}");
+        out.println("function stopInterval(){");
+        out.println("clearInterval(myInterval);");
+        out.println("myInterval = null;}");
+        out.println("function startInterval(){");
+        out.println("if(!myInterval) myInterval = setInterval(submitNext, 2000);}");
+        out.println("document.getElementById('auto').addEventListener('click', startInterval);");
+        out.println("document.getElementById('stop').addEventListener('click', stopInterval);");
+        out.println("</script>");
+    }
 }
 
