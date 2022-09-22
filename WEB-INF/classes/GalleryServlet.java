@@ -1,6 +1,10 @@
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -8,14 +12,15 @@ import java.util.Objects;
 public class GalleryServlet extends HttpServlet {
     private int count = 0;
   private int numRows;
+
+  private ArrayList<Blob> idList;
   private ArrayList<Blob> pictureList;
   private ArrayList<String> fileList;
   private ArrayList<String> captionList;
   private ArrayList<String> dateList;
 
-  public void doGet(HttpServletRequest request,
-      HttpServletResponse response)
-      throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request,
+      HttpServletResponse response) {
       getDataFromDB();
 
       try {
@@ -26,13 +31,14 @@ public class GalleryServlet extends HttpServlet {
       try{
           response.setContentType("text/html");
           response.setCharacterEncoding("UTF-8");
+          HttpSession session = request.getSession(false);
           String username = "";
 
           if (!isLoggedIn(request)) {
               response.setStatus(302);
               response.sendRedirect("login");
           }else{
-              username = request.getParameter("user_id");
+              username = session.getAttribute("USER_ID").toString();
           }
 
           String loginMsg = "Logged in as: " + username;
@@ -68,13 +74,18 @@ public class GalleryServlet extends HttpServlet {
           out.println("<div id=\"username\">" + loginMsg + "</div>");
 
           for(int i = 0; i < numRows; i++){
-              if(i == count) out.println("<div id='gallery_" + i + "' class='currentView'>");
+              if(i == count){
+                  out.println("<div id='gallery_" + i + "' class='currentView'>");
+                  request.setAttribute("fileName", fileList.get(i));
+              }
               else out.println("<div id='gallery_" + i + "' hidden>");
               out.println("<img id = \"img-" + i + "\"   src=./images/" + fileList.get(i) + " alt=\"image\" width=400 height=300>");
               out.println("<br>");
               out.println("<span id = \"caption-" + i + "\"  =>" + captionList.get(i) +"</span>");
               out.println("<br>");
               out.println("<span id = \"date-" + i + "\" >"+ dateList.get(i) + "</span>");
+
+              out.println("<span id = \"id-" + i + "\" class='hiddenGetter' getId='"+ idList.get(i) + "' hidden></span>");
               out.println("</div>");
           }
 
@@ -87,6 +98,12 @@ public class GalleryServlet extends HttpServlet {
           out.println("<button type='button' id='auto'>Auto</button>");
           out.println("<button type='button' id='stop'>Stop</button>");
           out.println("</div></div><br>");
+
+
+          out.println("<form action='gallery' method='post' id='deleteForm'>");
+          out.println("<input type='submit' form='deleteForm' id='delete' name='delete' value='Delete'></input>");
+          out.println("<input form='deleteForm' id='param' name='file' value='' hidden></input>");
+          out.println("</form>");
 
           out.println("<div>");
           out.println("<form action='main' method='get'>");
@@ -103,6 +120,35 @@ public class GalleryServlet extends HttpServlet {
       }
    }
 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            System.out.println("Gallery/Class: " + ex.getMessage());
+        }
+        try {
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+            PreparedStatement preparedStatement = con.prepareStatement(
+                    "DELETE FROM Photos where fileName = ?");
+            String fileName = request.getParameter("file");
+
+//            Blob blob = con.createBlob();
+//            blob.setBytes(1, fileName.getBytes());
+//            preparedStatement.setBlob(1, blob);
+//            preparedStatement.executeUpdate();
+
+//            PrintWriter out = response.getWriter();
+//            out.println(fileName);
+
+            preparedStatement.setString(1, fileName);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            doGet(request, response);
+        } catch (Exception e) {
+            System.out.println("Gallery/SQL: " + e.getMessage());
+        }
+    }
+
    private boolean isLoggedIn(HttpServletRequest req) {
 		HttpSession session = req.getSession(false);
 
@@ -114,6 +160,7 @@ public class GalleryServlet extends HttpServlet {
 	}
 
     public void getDataFromDB(){
+        idList = new ArrayList<>();
       pictureList = new ArrayList<>();
       fileList = new ArrayList<>();
       captionList = new ArrayList<>();
@@ -129,12 +176,15 @@ public class GalleryServlet extends HttpServlet {
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("select * from Photos");
 
-            Blob blob;
+            Blob blobId;
+            Blob blobImage;
             numRows = 0;
 
             while(rs.next()){
-                blob = rs.getBlob("picture");
-                pictureList.add(blob);
+                blobId = rs.getBlob("id");
+                blobImage = rs.getBlob("picture");
+                idList.add(blobId);
+                pictureList.add(blobImage);
                 fileList.add(rs.getString("fileName"));
                 captionList.add(rs.getString("caption"));
                 dateList.add(String.valueOf(rs.getDate("dateTaken")));
@@ -170,6 +220,9 @@ public class GalleryServlet extends HttpServlet {
         out.println("if(!myInterval) myInterval = setInterval(submitNext, 2000);}");
         out.println("document.getElementById('auto').addEventListener('click', startInterval);");
         out.println("document.getElementById('stop').addEventListener('click', stopInterval);");
+        out.println("let id = document.querySelector('.currentView').querySelector('img').getAttribute('src').split('/')[2];");
+//        out.println("let id = document.querySelector('.currentView').querySelector('.hiddenGetter').getAttribute('getId');");
+        out.println("document.getElementById('param').setAttribute('value',id);");
         out.println("</script>");
     }
 }
