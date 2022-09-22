@@ -45,6 +45,11 @@ public class FileUploadServlet extends HttpServlet {
             writer.append("<br />\n");
             writer.append("<input type=\"submit\" value=\"Submit\"/>\r\n");
             writer.append("</form>\r\n");
+            writer.append("<div>");
+            writer.append("<form action='main' method='get'>");
+            writer.append("<button class='button' id='main'>Main</button>");
+            writer.append("</div><br>");
+            writer.append("</form>");
             writer.append("</body>\r\n").append("</html>\r\n");
         }
     }
@@ -73,9 +78,16 @@ public class FileUploadServlet extends HttpServlet {
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div><ul>";
-        String bottomPart = "</ul></body></html>";
-        out.println(topPart + getListing(System.getProperty("catalina.base") + "/webapps/photogallery/images") + bottomPart);
+        String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
+        String bottomPart = "</body></html>";
+        out.println(topPart);
+        out.println("<ul>" + getListing(System.getProperty("catalina.base") + "/webapps/photogallery/images") + "</ul>");
+        out.println("<div>");
+        out.println("<form action='main' method='get'>");
+        out.println("<button class='button' id='main'>Main</button>");
+        out.println("</div><br>");
+        out.println("</form>");
+        out.println(bottomPart);
     }
 
     public void writeToDatabase(String fileName, String captionName, String formDate, String localPath) {
