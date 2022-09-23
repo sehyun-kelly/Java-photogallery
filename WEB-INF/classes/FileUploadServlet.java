@@ -71,7 +71,7 @@ public class FileUploadServlet extends HttpServlet {
 
         if (formDate.equals("")) formDate = String.valueOf(LocalDate.now());
         if (captionName.equals("")) captionName = "No caption";
-        String localPath = System.getProperty("catalina.base") + "/webapps/photogallery/images/" + fileName;
+        String localPath = System.getProperty("user.dir") + "/webapps/photogallery/images/" + fileName;
         filePart.write(localPath);
 
         writeToDatabase(fileName, captionName, formDate, localPath);
@@ -81,7 +81,7 @@ public class FileUploadServlet extends HttpServlet {
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
-        out.println("<ul>" + getListing(System.getProperty("catalina.base") + "/webapps/photogallery/images") + "</ul>");
+        out.println("<ul>" + getListing(System.getProperty("user.dir") + "/webapps/photogallery/images") + "</ul>");
         out.println("<div>");
         out.println("<form action='main' method='get'>");
         out.println("<button class='button' id='main'>Main</button>");

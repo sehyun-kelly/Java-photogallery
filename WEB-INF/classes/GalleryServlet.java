@@ -54,7 +54,7 @@ public class GalleryServlet extends HttpServlet {
               else if(count == 0) count = numRows - 1;
           }
 
-          File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileList.get(count));
+          File f = new File(System.getProperty("user.dir") + "/images/" + fileList.get(count));
           FileOutputStream fs = new FileOutputStream(f);
           byte b[] = pictureList.get(count).getBytes(1, (int)pictureList.get(count).length());
           fs.write(b);
