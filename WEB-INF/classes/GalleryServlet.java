@@ -137,7 +137,7 @@ public class GalleryServlet extends HttpServlet {
         try {
             Connection con = getConnection();
 
-            //delete with id - to be updated
+            //delete with id - to be updated!!!
 //            byte id[] = request.getParameter("pictureId").getBytes();
 //            deleteFile(id);
 
