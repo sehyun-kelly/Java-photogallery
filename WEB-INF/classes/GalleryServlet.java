@@ -4,167 +4,178 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class GalleryServlet extends HttpServlet {
-    private int count = 0;
-  private int numRows;
+    private int currentIndex = 0;
+    private int numRows;
 
-  private ArrayList<Blob> idList;
-  private ArrayList<Blob> pictureList;
-  private ArrayList<String> fileList;
-  private ArrayList<String> captionList;
-  private ArrayList<String> dateList;
+    private ArrayList<byte[]> idList;
+    private ArrayList<byte[]> userIdList;
+    private ArrayList<Blob> pictureList;
+    private ArrayList<String> fileList;
+    private ArrayList<String> captionList;
+    private ArrayList<String> dateList;
 
     protected void doGet(HttpServletRequest request,
-      HttpServletResponse response) {
-      getDataFromDB();
+                         HttpServletResponse response) throws IOException {
+        getDataFromDB(response.getWriter());
 
-      try {
-          Class.forName("com.mysql.cj.jdbc.Driver");
-      } catch (Exception ex) {
-          System.out.println("Gallery/Class: " + ex.getMessage());
-      }
-      try{
-          response.setContentType("text/html");
-          response.setCharacterEncoding("UTF-8");
-          HttpSession session = request.getSession(false);
-          String username = "";
+        try{
+            response.setContentType("text/html");
+            response.setCharacterEncoding("UTF-8");
+            HttpSession session = request.getSession(false);
+            String username = "";
 
-          if (!isLoggedIn(request)) {
-              response.setStatus(302);
-              response.sendRedirect("login");
-          }else{
-              username = session.getAttribute("USER_ID").toString();
-          }
+            if (!isLoggedIn(request)) {
+                response.setStatus(302);
+                response.sendRedirect("login");
+            }else{
+                username = session.getAttribute("USER_ID").toString();
+            }
 
-          String loginMsg = "Logged in as: " + username;
+            String loginMsg = "Logged in as: " + username;
 
-          PrintWriter out = response.getWriter();
-          String button = request.getParameter("button");
+            String button = request.getParameter("button");
 
-          if(Objects.equals(button,"Next")){
-              if((numRows - 1) > count) count++;
-              else if(numRows - 1 == count) count = 0;
-          }else if(Objects.equals(button,"Prev")){
-              if(count > 0) count--;
-              else if(count == 0) count = numRows - 1;
-          }
+            if(Objects.equals(button,"Next")){
+                if((numRows - 1) > currentIndex) currentIndex++;
+                else if(numRows - 1 == currentIndex) currentIndex = 0;
+            }else if(Objects.equals(button,"Prev")){
+                if(currentIndex > 0) currentIndex--;
+                else if(currentIndex == 0) currentIndex = numRows - 1;
+            }else currentIndex = 0;
 
-          File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileList.get(count));
-          FileOutputStream fs = new FileOutputStream(f);
-          byte b[] = pictureList.get(count).getBytes(1, (int)pictureList.get(count).length());
-          fs.write(b);
+            byte username_uuid[] = getUuid(username);
+            byte userIdList_uuid[] = userIdList.get(currentIndex);
+            byte idList_id[] = idList.get(currentIndex);
+            String pictureId = new String(idList_id);
 
-          out.println("<html>");
-          out.println("<head>");
-          out.println("<meta charset='UTF-8'>");
-          out.println("<style>");
-          out.println("#username {");
-          out.println("text-align: right;");
-          out.println("color: red;");
-          out.println("}");
-          out.println("</style>");
-          out.println("</head>");
-          out.println("<body>");
-          out.println("<div>");
-          out.println("<div id=\"username\">" + loginMsg + "</div>");
+            PrintWriter out = response.getWriter();
 
-          for(int i = 0; i < numRows; i++){
-              if(i == count){
-                  out.println("<div id='gallery_" + i + "' class='currentView'>");
-                  request.setAttribute("fileName", fileList.get(i));
-              }
-              else out.println("<div id='gallery_" + i + "' hidden>");
-              out.println("<img id = \"img-" + i + "\"   src=./images/" + fileList.get(i) + " alt=\"image\" width=400 height=300>");
-              out.println("<br>");
-              out.println("<span id = \"caption-" + i + "\"  =>" + captionList.get(i) +"</span>");
-              out.println("<br>");
-              out.println("<span id = \"date-" + i + "\" >"+ dateList.get(i) + "</span>");
+            File f = new File(System.getProperty("catalina.base") + "/webapps/photogallery/images/"+ fileList.get(currentIndex));
+            FileOutputStream fs = new FileOutputStream(f);
+            byte b[] = pictureList.get(currentIndex).getBytes(1, (int)pictureList.get(currentIndex).length());
+            fs.write(b);
 
-              out.println("<span id = \"id-" + i + "\" class='hiddenGetter' getId='"+ idList.get(i) + "' hidden></span>");
-              out.println("</div>");
-          }
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<meta charset='UTF-8'>");
+            out.println("<style>");
+            out.println("#username {");
+            out.println("text-align: right;");
+            out.println("color: red;");
+            out.println("}");
+            out.println("</style>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<div>");
+            out.println("<div id=\"username\">" + loginMsg + "</div>");
 
-          out.println("<br>");
-          out.println("<div class='button'>");
-          out.println("<form action='gallery' method='get' id='buttonForm'>");
-          out.println("<input type='submit' form='buttonForm' id='prev' name='button' value='Prev'></input>");
-          out.println("<input type='submit' form='buttonForm' id='next' name='button' value='Next'></input>");
-          out.println("</form>");
-          out.println("<button type='button' id='auto'>Auto</button>");
-          out.println("<button type='button' id='stop'>Stop</button>");
-          out.println("</div></div><br>");
+            for(int i = 0; i < numRows; i++){
+                if(i == currentIndex){
+                    out.println("<div id='gallery_" + i + "' class='currentView'>");
+                    request.setAttribute("fileName", fileList.get(i));
+                }
+                else out.println("<div id='gallery_" + i + "' hidden>");
+                out.println("<img id = \"img-" + i + "\"   src=./images/" + fileList.get(i) + " alt=\"image\" width=400 height=300>");
+                out.println("<br>");
+                out.println("<span id = \"caption-" + i + "\"  =>" + captionList.get(i) +"</span>");
+                out.println("<br>");
+                out.println("<span id = \"date-" + i + "\" >"+ dateList.get(i) + "</span>");
+                out.println("</div>");
+            }
+
+            out.println("<br>");
+            out.println("<div class='button'>");
+            out.println("<form action='gallery' method='get' id='buttonForm'>");
+            out.println("<input type='submit' form='buttonForm' id='prev' name='button' value='Prev'></input>");
+            out.println("<input type='submit' form='buttonForm' id='next' name='button' value='Next'></input>");
+            out.println("</form>");
+            out.println("<button type='button' id='auto'>Auto</button>");
+            out.println("<button type='button' id='stop'>Stop</button>");
+            out.println("</div></div><br>");
 
 
-          out.println("<form action='gallery' method='post' id='deleteForm'>");
-          out.println("<input type='submit' form='deleteForm' id='delete' name='delete' value='Delete'></input>");
-          out.println("<input form='deleteForm' id='param' name='file' value='' hidden></input>");
-          out.println("</form>");
+            //Delete button appears only on the picture this user uploads
+            if(Arrays.equals(username_uuid, userIdList_uuid)) {
+                out.println("<form action='gallery' method='post' id='deleteForm'>");
+                out.println("<input type='submit' form='deleteForm' id='delete' name='delete' value='Delete'></input>");
+                out.println("<input form='deleteForm' id='param' name='pictureId' value='" + pictureId + "' hidden></input>");
+                out.println("<input form='deleteForm' name='fileName' value='" + fileList.get(currentIndex) + "' hidden></input>");
 
-          out.println("<div>");
-          out.println("<form action='main' method='get'>");
-          out.println("<button class='button' id='main'>Main</button>");
-          out.println("</div><br>");
-          out.println("</form>");
-          writeScript(out);
-          out.println("</body>");
-          out.println("</html>");
+                out.println("</form>");
+            }
 
-          out.close();
-      }catch(Exception e){
-          e.printStackTrace();
-      }
-   }
+            out.println("<div>");
+            out.println("<form action='main' method='get'>");
+            out.println("<button class='button' id='main'>Main</button>");
+            out.println("</div><br>");
+            out.println("</form>");
+            writeScript(out);
+            out.println("</body>");
+            out.println("</html>");
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+            out.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException ex) {
             System.out.println("Gallery/Class: " + ex.getMessage());
         }
         try {
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+            Connection con = getConnection();
+
+            //delete with id - to be updated
+//            byte id[] = request.getParameter("pictureId").getBytes();
+//            deleteFile(id);
+
+            //delete with fileName
             PreparedStatement preparedStatement = con.prepareStatement(
                     "DELETE FROM Photos where fileName = ?");
-            String fileName = request.getParameter("file");
-
-//            Blob blob = con.createBlob();
-//            blob.setBytes(1, fileName.getBytes());
-//            preparedStatement.setBlob(1, blob);
-//            preparedStatement.executeUpdate();
-
-//            PrintWriter out = response.getWriter();
-//            out.println(fileName);
+            String fileName = request.getParameter("fileName");
 
             preparedStatement.setString(1, fileName);
             preparedStatement.executeUpdate();
             preparedStatement.close();
-            doGet(request, response);
+
         } catch (Exception e) {
             System.out.println("Gallery/SQL: " + e.getMessage());
         }
+
+        doGet(request, response);
     }
 
-   private boolean isLoggedIn(HttpServletRequest req) {
-		HttpSession session = req.getSession(false);
+    private boolean isLoggedIn(HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
 
-		if (session == null || !req.isRequestedSessionIdValid()) {
-			return false;
-		}else{
-			return true;
-		}
-	}
+        if (session == null || !req.isRequestedSessionIdValid()) {
+            return false;
+        }else{
+            return true;
+        }
+    }
 
-    public void getDataFromDB(){
+    private void getDataFromDB(PrintWriter out){
         idList = new ArrayList<>();
-      pictureList = new ArrayList<>();
-      fileList = new ArrayList<>();
-      captionList = new ArrayList<>();
-      dateList = new ArrayList<>();
+        userIdList = new ArrayList<>();
+        pictureList = new ArrayList<>();
+        fileList = new ArrayList<>();
+        captionList = new ArrayList<>();
+        dateList = new ArrayList<>();
+
+        Blob blobImage;
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -172,25 +183,21 @@ public class GalleryServlet extends HttpServlet {
             System.out.println("Gallery/Class: " + ex.getMessage());
         }
         try{
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+            Connection con = getConnection();
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("select * from Photos");
-
-            Blob blobId;
-            Blob blobImage;
             numRows = 0;
 
             while(rs.next()){
-                blobId = rs.getBlob("id");
                 blobImage = rs.getBlob("picture");
-                idList.add(blobId);
+                idList.add(rs.getBytes("id"));
+                userIdList.add(rs.getBytes("userId"));
                 pictureList.add(blobImage);
                 fileList.add(rs.getString("fileName"));
                 captionList.add(rs.getString("caption"));
                 dateList.add(String.valueOf(rs.getDate("dateTaken")));
                 numRows++;
             }
-
             stmt.close();
             con.close();
         }catch(Exception e){
@@ -199,7 +206,7 @@ public class GalleryServlet extends HttpServlet {
 
     }
 
-    public void writeScript(PrintWriter out){
+    private void writeScript(PrintWriter out){
         out.println("<script>");
         out.println("let myInterval;");
         out.println("function submitNext(){");
@@ -220,10 +227,53 @@ public class GalleryServlet extends HttpServlet {
         out.println("if(!myInterval) myInterval = setInterval(submitNext, 2000);}");
         out.println("document.getElementById('auto').addEventListener('click', startInterval);");
         out.println("document.getElementById('stop').addEventListener('click', stopInterval);");
-        out.println("let id = document.querySelector('.currentView').querySelector('img').getAttribute('src').split('/')[2];");
-//        out.println("let id = document.querySelector('.currentView').querySelector('.hiddenGetter').getAttribute('getId');");
-        out.println("document.getElementById('param').setAttribute('value',id);");
         out.println("</script>");
+    }
+
+    private byte[] getUuid(String userId) {
+        Connection con;
+        try {
+            con = getConnection();
+
+            PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
+            s.setString(1, userId);
+
+            ResultSet rs = s.executeQuery();
+            if (!rs.next()) {
+                return null;
+            }
+            return rs.getBytes("id");
+        } catch (Exception e) {
+            System.out.println("Gallery/getUuid: " + e.getMessage());
+        }
+        return null;
+    }
+
+    private void deleteFile(byte[] fileID) throws SQLException {
+        Connection con = getConnection();
+
+        PreparedStatement preparedStatement = con.prepareStatement(
+                    "DELETE FROM Photos where id = ?");
+//
+//            PrintWriter out = response.getWriter();
+//
+//            out.println("delete file name:");
+//            out.println("<br>");
+//            for(int i = 0; i < id.length; i++){
+//                out.println(id[i]);
+//            }
+//            out.println("<br>");
+//
+//            out.println(new String(id));
+//
+            preparedStatement.setBytes(1, fileID);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+
+    }
+    private Connection getConnection() throws SQLException {
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+        return con;
     }
 }
 
