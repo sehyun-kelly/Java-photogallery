@@ -84,7 +84,7 @@ public class GalleryServlet extends HttpServlet {
                     request.setAttribute("fileName", fileList.get(i));
                 }
                 else out.println("<div id='gallery_" + i + "' hidden>");
-                byte[] imagebytes = pictureList.get(i).getBytes(0, (int)pictureList.get(i).length());
+                byte[] imagebytes = pictureList.get(i).getBytes(1, (int)pictureList.get(i).length());
                 out.println("<img id = \"img-" + i + "\"   src=\"data:image/png;base64," + Arrays.toString(Base64.getEncoder().encode(imagebytes)) + "\" alt=\"image\" width=400 height=300>");
                 out.println("<br>");
                 out.println("<span id = \"caption-" + i + "\"  =>" + captionList.get(i) +"</span>");
