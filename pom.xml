@@ -72,17 +72,22 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.3.0</version>
         <executions>
           <execution>
-            <phase>package</phase>
-            <goals><goal>copy</goal></goals>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
             <configuration>
+              <outputDirectory>${endorsed.dir}</outputDirectory>
+              <silent>true</silent>
               <artifactItems>
                 <artifactItem>
-                  <groupId>com.heroku</groupId>
-                  <artifactId>webapp-runner</artifactId>
-                  <version>9.0.52.1</version>
-                  <destFileName>webapp-runner.jar</destFileName>
+                  <groupId>javax</groupId>
+                  <artifactId>javaee-api</artifactId>
+                  <version>${jakartaee}</version>
+                  <type>jar</type>
                 </artifactItem>
               </artifactItems>
             </configuration>
