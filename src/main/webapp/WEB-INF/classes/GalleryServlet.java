@@ -14,6 +14,7 @@ import java.util.Objects;
 public class GalleryServlet extends HttpServlet {
     private int currentIndex = 0;
     private int numRows;
+    private final String BASE_URL = System.getProperty("user.home") + "/images/";
 
     private ArrayList<byte[]> idList;
     private ArrayList<byte[]> userIdList;
@@ -58,7 +59,7 @@ public class GalleryServlet extends HttpServlet {
 
             PrintWriter out = response.getWriter();
 
-            File f = new File(System.getProperty("user.home") + "/images/"+ fileList.get(currentIndex));
+            File f = new File(BASE_URL + fileList.get(currentIndex));
             FileOutputStream fs = new FileOutputStream(f);
             byte b[] = pictureList.get(currentIndex).getBytes(1, (int)pictureList.get(currentIndex).length());
             fs.write(b);
@@ -69,7 +70,6 @@ public class GalleryServlet extends HttpServlet {
             out.println("<style>");
             out.println("#username {");
             out.println("text-align: right;");
-            out.println("color: red;");
             out.println("}");
             out.println("</style>");
             out.println("</head>");
@@ -83,7 +83,7 @@ public class GalleryServlet extends HttpServlet {
                     request.setAttribute("fileName", fileList.get(i));
                 }
                 else out.println("<div id='gallery_" + i + "' hidden>");
-                out.println("<img id = \"img-" + i + "\"   src=./images/" + fileList.get(i) + " alt=\"image\" width=400 height=300>");
+                out.println("<img id = \"img-" + i + "\"   src=" + BASE_URL + fileList.get(i) + " alt=\"image\" width=400 height=300>");
                 out.println("<br>");
                 out.println("<span id = \"caption-" + i + "\"  =>" + captionList.get(i) +"</span>");
                 out.println("<br>");

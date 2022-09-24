@@ -16,6 +16,8 @@ public class SearchServlet extends HttpServlet {
 	private static int CAPTION_LOOP = -1;
 	private static int DATE_LOOP = -1;
 	private static int MY_LOOP = -1;
+	private final String BASE_URL = System.getProperty("user.home") + "/images/";
+
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (!isLoggedIn(request)) { 
 			response.setStatus(302);
@@ -78,7 +80,7 @@ System.out.println("?????doPost Called???????????????");
 			else if ((!Objects.equals(caption, "")) & (Objects.equals(date, ""))) {
 				if ((CAPTION_FILENAME != null) & (CAPTION_LOOP >= 0)) {
 					for (int i = 0; i <= CAPTION_LOOP; i++) {
-						out.println("<img id = \"img_src\" src=./images/" + CAPTION_FILENAME[i] + " alt=" + CAPTION_FILENAME[i] + " width=400 height=350>");
+						out.println("<img id = \"img_src\" src=" + BASE_URL + CAPTION_FILENAME[i] + " alt=" + CAPTION_FILENAME[i] + " width=400 height=350>");
 					}
 
 				} else {
@@ -88,7 +90,7 @@ System.out.println("?????doPost Called???????????????");
 			else if (Objects.equals(caption, "")) {
 				if ((DATA_FILENAME != null) & (DATE_LOOP >= 0)) {
 					for (int j = 0; j <= DATE_LOOP; j++) {
-						out.println("<img id = \"img_src\" src=./images/" + DATA_FILENAME[j] + " alt=" + DATA_FILENAME[j] + " width=400 height=350>");
+						out.println("<img id = \"img_src\" src=" + BASE_URL + DATA_FILENAME[j] + " alt=" + DATA_FILENAME[j] + " width=400 height=350>");
 					}
 				} else {
 					out.println("<div>No such photo was found! Please enter correct date.</div>");
@@ -97,7 +99,7 @@ System.out.println("?????doPost Called???????????????");
 			else {
 				if (MY_LOOP >= 0) {
 					for (int k = 0; k <= MY_LOOP; k++) {
-						out.println("<img id = \"img_src\" src=./images/" + MY_FILENAME[k] + " alt=" + MY_FILENAME[k] + " width=400 height=350>");
+						out.println("<img id = \"img_src\" src=" + BASE_URL + MY_FILENAME[k] + " alt=" + MY_FILENAME[k] + " width=400 height=350>");
 					}
 				} else {
 					out.println("<div>Caption and Data not match in one photo.</div>");

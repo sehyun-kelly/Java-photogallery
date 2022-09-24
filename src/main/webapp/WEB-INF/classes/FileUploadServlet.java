@@ -73,7 +73,6 @@ public class FileUploadServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.println(System.getProperty("user.home"));
         Path path = Paths.get(System.getProperty("user.home") + "/images/");
         Files.createDirectories(path);
 
