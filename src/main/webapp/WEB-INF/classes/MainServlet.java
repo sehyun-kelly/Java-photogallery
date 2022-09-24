@@ -7,7 +7,8 @@ public class MainServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
-        if (session == null) {
+        boolean isLoggedIn = isLoggedIn(request);
+        if (!isLoggedIn) {
             response.setStatus(302);
             response.sendRedirect("login");
         }
@@ -45,5 +46,11 @@ public class MainServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         out.println(html);
+    }
+
+    private boolean isLoggedIn(HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
+
+        return session != null && req.isRequestedSessionIdValid();
     }
 }

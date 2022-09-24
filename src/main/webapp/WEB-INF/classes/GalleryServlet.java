@@ -58,7 +58,7 @@ public class GalleryServlet extends HttpServlet {
 
             PrintWriter out = response.getWriter();
 
-            File f = new File(System.getProperty("user.dir") + "/images/"+ fileList.get(currentIndex));
+            File f = new File(System.getProperty("catalina.base") + "/images/"+ fileList.get(currentIndex));
             FileOutputStream fs = new FileOutputStream(f);
             byte b[] = pictureList.get(currentIndex).getBytes(1, (int)pictureList.get(currentIndex).length());
             fs.write(b);
