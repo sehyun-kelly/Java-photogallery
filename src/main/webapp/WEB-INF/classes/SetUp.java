@@ -8,11 +8,9 @@ public class SetUp {
             System.out.println("SetUp/Message: " + ex.getMessage());
         }
         try {
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306", "comp3940", "");
+            Connection con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
             Statement s = con.createStatement();
-            s.executeUpdate("CREATE SCHEMA IF NOT EXISTS comp3940;");
-            s.executeUpdate("USE comp3940;");
             s.executeUpdate("DROP TABLE IF EXISTS Photos;");
             s.executeUpdate("DROP TABLE IF EXISTS Users;");
             s.executeUpdate("CREATE TABLE Users (" +
@@ -42,11 +40,9 @@ public class SetUp {
             System.out.println("SetUp/Message: " + ex.getMessage());
         }
         try {
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306", "comp3940", "");
+            Connection con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
             Statement s = con.createStatement();
-            s.executeUpdate("CREATE SCHEMA IF NOT EXISTS comp3940;");
-            s.executeUpdate("USE comp3940;");
             s.executeUpdate("CREATE TABLE IF NOT EXISTS Users (" +
                     "id VARBINARY(16)," +
                     "userId VARCHAR(50) UNIQUE," +

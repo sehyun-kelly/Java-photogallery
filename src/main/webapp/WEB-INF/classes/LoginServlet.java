@@ -9,6 +9,7 @@ import java.util.UUID;
 public class LoginServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
+		SetUp.setUpTable();
 		PrintWriter out = response.getWriter();
 		out.println("<html>\n" + "<head><title>" + "Login" + "</title></head>\n" + "<body>\n"
 				+ "<h1 align=\"center\">" + "Login" + "</h1>\n" + "<form action=\"login\" method=\"POST\">\n"
@@ -41,7 +42,8 @@ public class LoginServlet extends HttpServlet {
 		if (Objects.equals(button, "Sign in")) {
 			System.out.println("sign in pass");
 			try {
-				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+				Connection conn = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
+
 				Statement stmt = conn.createStatement();
 
 				ResultSet rs = stmt.executeQuery("SELECT * FROM users");
@@ -65,7 +67,7 @@ public class LoginServlet extends HttpServlet {
 		} else if (button.equals("Register")){
 			System.out.println("register pass");
 			try {
-				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+				Connection conn = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 				PreparedStatement stmt = conn.prepareStatement(sql);
 
 				stmt.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));

@@ -98,7 +98,7 @@ public class FileUploadServlet extends HttpServlet {
             System.out.println("Upload/Class: " + ex.getMessage());
         }
         try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+            con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
@@ -121,7 +121,7 @@ public class FileUploadServlet extends HttpServlet {
     public byte[] getUuid(String userId) {
         Connection con;
         try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+            con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
             PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
             s.setString(1, userId);
@@ -159,7 +159,7 @@ public class FileUploadServlet extends HttpServlet {
             System.out.println("Upload/Class: " + ex.getMessage());
         }
         try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+            con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
             PreparedStatement s = con.prepareStatement("SELECT userId FROM Photos WHERE fileName = ?;");
             s.setString(1, fileName);
@@ -185,7 +185,7 @@ public class FileUploadServlet extends HttpServlet {
             System.out.println("Upload/Class: " + ex.getMessage());
         }
         try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+            con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
             PreparedStatement s = con.prepareStatement("SELECT userId FROM Users WHERE id = ?;");
             s.setBytes(1, uuid);

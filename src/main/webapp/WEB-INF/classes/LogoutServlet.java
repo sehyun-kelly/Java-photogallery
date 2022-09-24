@@ -20,7 +20,7 @@ public class LogoutServlet extends HttpServlet {
 
 	}
 
-// Method to handle POST method request.
+	// Method to handle POST method request.
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Set response content type
 		HttpSession session = request.getSession(false);

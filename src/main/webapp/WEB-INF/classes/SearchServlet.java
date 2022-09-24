@@ -116,7 +116,7 @@ System.out.println("?????doPost Called???????????????");
 			System.out.println("Search/Class: " + ex.getMessage());
 		}
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+			con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 			PreparedStatement s = con.prepareStatement("SELECT filename FROM Photos WHERE dateTaken = '" + date + "' && caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -142,7 +142,7 @@ System.out.println("?????doPost Called???????????????");
 			System.out.println("Search/Class: " + ex.getMessage());
 		}
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+			con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 			PreparedStatement s = con.prepareStatement("SELECT filename FROM Photos WHERE dateTaken = '" + date + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -167,7 +167,7 @@ System.out.println("?????doPost Called???????????????");
 			System.out.println("Search/Class: " + ex.getMessage());
 		}
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/comp3940", "comp3940", "");
+			con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 			PreparedStatement s = con.prepareStatement("SELECT filename FROM Photos WHERE caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
