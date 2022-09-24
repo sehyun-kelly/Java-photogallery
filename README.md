@@ -1,7 +1,7 @@
 # COMP-3940
 
 #### Group 3
-Term: Set 3G, Fall 2022
+Term: Set 3G, Fall 2022 \
 Members: Chengyang Li, Sehyun Park, Alex Pu, Melanie Ta, Shen Yen
 
 ### Instructions to run locally

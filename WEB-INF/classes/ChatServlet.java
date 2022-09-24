@@ -99,9 +99,9 @@ public class ChatServlet extends HttpServlet {
                 "\n" +
                 "    Chat.initialize = function() {\n" +
                 "        if (window.location.protocol == 'http:') {\n" +
-                "            Chat.connect('ws://' + window.location.host + '/photogallery/chat');\n" +
+                "            Chat.connect('ws://' + window.location.host + '/chat');\n" +
                 "        } else {\n" +
-                "            Chat.connect('wss://' + window.location.host + '/photogallery/chat');\n" +
+                "            Chat.connect('wss://' + window.location.host + '/chat');\n" +
                 "        }\n" +
                 "    };\n" +
                 "\n" +
