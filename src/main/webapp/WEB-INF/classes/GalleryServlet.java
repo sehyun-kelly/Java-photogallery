@@ -2,8 +2,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
@@ -59,11 +57,6 @@ public class GalleryServlet extends HttpServlet {
             String pictureId = new String(idList_id);
 
             PrintWriter out = response.getWriter();
-
-            File f = new File(BASE_URL + fileList.get(currentIndex));
-            FileOutputStream fs = new FileOutputStream(f);
-            byte b[] = pictureList.get(currentIndex).getBytes(1, (int)pictureList.get(currentIndex).length());
-            fs.write(b);
 
             out.println("<html>");
             out.println("<head>");

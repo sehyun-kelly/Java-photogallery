@@ -2,10 +2,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import java.util.Base64;
 import java.util.Objects;
 
 public class SearchServlet extends HttpServlet {
@@ -13,6 +11,7 @@ public class SearchServlet extends HttpServlet {
 	private static String[] CAPTION_FILENAME;
 	private static String[] DATA_FILENAME;
 	private static String[] MY_FILENAME;
+	private final Blob[] MY_BLOB = new Blob[1024];
 	private static int CAPTION_LOOP = -1;
 	private static int DATE_LOOP = -1;
 	private static int MY_LOOP = -1;
@@ -80,7 +79,12 @@ System.out.println("?????doPost Called???????????????");
 			else if ((!Objects.equals(caption, "")) & (Objects.equals(date, ""))) {
 				if ((CAPTION_FILENAME != null) & (CAPTION_LOOP >= 0)) {
 					for (int i = 0; i <= CAPTION_LOOP; i++) {
-						out.println("<img id = \"img_src\" src=" + BASE_URL + CAPTION_FILENAME[i] + " alt=" + CAPTION_FILENAME[i] + " width=400 height=350>");
+						try {
+							byte[] imagebytes = MY_BLOB[i].getBytes(1, (int)MY_BLOB[i].length());
+							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imagebytes) + "\" alt=" + CAPTION_FILENAME[i] + " width=400 height=350>");
+						} catch (SQLException e) {
+							System.out.println("Search/Post: " + e.getMessage());
+						}
 					}
 
 				} else {
@@ -90,7 +94,12 @@ System.out.println("?????doPost Called???????????????");
 			else if (Objects.equals(caption, "")) {
 				if ((DATA_FILENAME != null) & (DATE_LOOP >= 0)) {
 					for (int j = 0; j <= DATE_LOOP; j++) {
-						out.println("<img id = \"img_src\" src=" + BASE_URL + DATA_FILENAME[j] + " alt=" + DATA_FILENAME[j] + " width=400 height=350>");
+						try {
+							byte[] imagebytes = MY_BLOB[j].getBytes(1, (int)MY_BLOB[j].length());
+							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imagebytes) + "\" alt=" + DATA_FILENAME[j] + " width=400 height=350>");
+						} catch (SQLException e) {
+							System.out.println("Search/Post: " + e.getMessage());
+						}
 					}
 				} else {
 					out.println("<div>No such photo was found! Please enter correct date.</div>");
@@ -99,7 +108,12 @@ System.out.println("?????doPost Called???????????????");
 			else {
 				if (MY_LOOP >= 0) {
 					for (int k = 0; k <= MY_LOOP; k++) {
-						out.println("<img id = \"img_src\" src=" + BASE_URL + MY_FILENAME[k] + " alt=" + MY_FILENAME[k] + " width=400 height=350>");
+						try {
+							byte[] imagebytes = MY_BLOB[k].getBytes(1, (int)MY_BLOB[k].length());
+							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imagebytes) + "\" alt=" + MY_FILENAME[k] + " width=400 height=350>");
+						} catch (SQLException e) {
+							System.out.println("Search/Post: " + e.getMessage());
+						}
 					}
 				} else {
 					out.println("<div>Caption and Data not match in one photo.</div>");
@@ -119,11 +133,12 @@ System.out.println("?????doPost Called???????????????");
 		}
 		try {
 			con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-			PreparedStatement s = con.prepareStatement("SELECT filename FROM Photos WHERE dateTaken = '" + date + "' && caption = '" + caption + "';");
+			PreparedStatement s = con.prepareStatement("SELECT (fileName, picture) FROM Photos WHERE dateTaken = '" + date + "' && caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				MY_LOOP++;
 				myArray[MY_LOOP] = rs.getString(1);
+				MY_BLOB[MY_LOOP] = rs.getBlob(2);
 			}
 			MY_FILENAME = myArray;
 
@@ -145,11 +160,12 @@ System.out.println("?????doPost Called???????????????");
 		}
 		try {
 			con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-			PreparedStatement s = con.prepareStatement("SELECT filename FROM Photos WHERE dateTaken = '" + date + "';");
+			PreparedStatement s = con.prepareStatement("SELECT (fileName, picture) FROM Photos WHERE dateTaken = '" + date + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				DATE_LOOP++;
 				dateArray[DATE_LOOP] = rs.getString(1);
+				MY_BLOB[DATE_LOOP] = rs.getBlob(2);
 			}
 			DATA_FILENAME = dateArray;
 
@@ -170,11 +186,12 @@ System.out.println("?????doPost Called???????????????");
 		}
 		try {
 			con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-			PreparedStatement s = con.prepareStatement("SELECT filename FROM Photos WHERE caption = '" + caption + "';");
+			PreparedStatement s = con.prepareStatement("SELECT (fileName, picture) FROM Photos WHERE caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				CAPTION_LOOP ++;
 				captionArray[CAPTION_LOOP] = rs.getString(1);
+				MY_BLOB[CAPTION_LOOP] = rs.getBlob(2);
 			}
 			CAPTION_FILENAME = captionArray;
 		} catch (Exception e) {

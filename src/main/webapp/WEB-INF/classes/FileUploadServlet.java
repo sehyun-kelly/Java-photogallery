@@ -99,7 +99,7 @@ public class FileUploadServlet extends HttpServlet {
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
-        out.println("<ul>" + getListing(System.getProperty("user.home") + "/images") + "</ul>");
+        out.println("<ul>" + getListing() + "</ul>");
         out.println("<div>");
         out.println("<form action='main' method='get'>");
         out.println("<button class='button' id='main'>Main</button>");
@@ -144,18 +144,22 @@ public class FileUploadServlet extends HttpServlet {
         return null;
     }
 
-    private String getListing(String path) {
-        File dir = new File(path);
-        String[] chld = dir.list();
+    private String getListing() {
+        try {
+            PreparedStatement s = con.prepareStatement("SELECT fileName FROM Photos;");
+            ResultSet rs = s.executeQuery();
 
-        if (chld == null) return "No files found";
-
-        String dirList = "Files you have posted:";
-        for (String s : chld) {
-            if (checkPoster(s))
-                dirList += "<li>" + s + "</li>";
+            String dirList = "Files you have posted:";
+            while (rs.next()) {
+                if (checkPoster(rs.getString("fileName"))){
+                    dirList += "<li>" + s + "</li>";
+                }
+            }
+            return dirList;
+        } catch (Exception e) {
+            System.out.println("Upload/getListing: " + e.getMessage());
         }
-        return dirList;
+        return "Empty.";
     }
 
     private boolean checkPoster(String fileName) {
