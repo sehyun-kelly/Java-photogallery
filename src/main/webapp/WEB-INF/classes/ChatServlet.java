@@ -7,17 +7,23 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ServerEndpoint(value = "/chat")
 public class ChatServlet extends HttpServlet {
-    private String currentUser;
-    private static final Set<ChatServlet> connections =
-            new CopyOnWriteArraySet<>();
+    private final int index;
+    private static final AtomicInteger connectionIds = new AtomicInteger(0);
+    private static final Set<ChatServlet> connections = new CopyOnWriteArraySet<>();
+    private static final ArrayList<String> username = new ArrayList<>();
 
     private Session session;
+
+    public ChatServlet() {
+        index = connectionIds.getAndIncrement();
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -30,7 +36,7 @@ public class ChatServlet extends HttpServlet {
             response.sendRedirect("login");
         }
 
-        currentUser = session.getAttribute("USER_ID").toString();
+        username.add(session.getAttribute("USER_ID").toString());
         String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
         String html = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" +
@@ -169,7 +175,7 @@ public class ChatServlet extends HttpServlet {
     public void start(Session session) {
         this.session = session;
         connections.add(this);
-        String message = String.format("* %s %s", currentUser, "has joined.");
+        String message = String.format("* %s %s", username.get(index), "has joined.");
         broadcast(message);
     }
 
@@ -177,7 +183,7 @@ public class ChatServlet extends HttpServlet {
     @OnClose
     public void end() {
         connections.remove(this);
-        String message = String.format("* %s %s", currentUser, "has disconnected.");
+        String message = String.format("* %s %s", username.get(index), "has disconnected.");
         broadcast(message);
     }
 
@@ -185,7 +191,7 @@ public class ChatServlet extends HttpServlet {
     @OnMessage
     public void incoming(String message) {
         // Never trust the client
-        String filteredMessage = String.format("%s: %s", currentUser, message);
+        String filteredMessage = String.format("%s: %s", username.get(index), message);
         broadcast(filteredMessage);
     }
 
@@ -211,7 +217,7 @@ public class ChatServlet extends HttpServlet {
                 } catch (IOException e1) {
                     // Ignore
                 }
-                String message = String.format("* %s %s", client.currentUser, "has been disconnected.");
+                String message = String.format("* %s %s", username.get(client.index), "has been disconnected.");
                 broadcast(message);
             }
         }
