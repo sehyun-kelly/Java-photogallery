@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
 		if (Objects.equals(button, "Sign in")) {
 			System.out.println("sign in pass");
 			try {
-				Connection conn = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
+				Connection conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
 				Statement stmt = conn.createStatement();
 
@@ -67,7 +67,7 @@ public class LoginServlet extends HttpServlet {
 		} else if (button.equals("Register")){
 			System.out.println("register pass");
 			try {
-				Connection conn = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
+				Connection conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 				PreparedStatement stmt = conn.prepareStatement(sql);
 
 				stmt.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));

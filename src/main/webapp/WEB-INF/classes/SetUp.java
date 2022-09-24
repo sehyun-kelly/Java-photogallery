@@ -8,7 +8,7 @@ public class SetUp {
             System.out.println("SetUp/Message: " + ex.getMessage());
         }
         try {
-            Connection con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
+            Connection con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
             Statement s = con.createStatement();
             s.executeUpdate("DROP TABLE IF EXISTS Photos;");
@@ -40,7 +40,7 @@ public class SetUp {
             System.out.println("SetUp/Message: " + ex.getMessage());
         }
         try {
-            Connection con = DriverManager.getConnection("us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
+            Connection con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
             Statement s = con.createStatement();
             s.executeUpdate("CREATE TABLE IF NOT EXISTS Users (" +
