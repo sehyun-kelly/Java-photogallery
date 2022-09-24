@@ -15,6 +15,7 @@ import java.util.*;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
+    private static Connection con;
     private String currentUser;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -55,12 +56,24 @@ public class FileUploadServlet extends HttpServlet {
             writer.append("</form>");
             writer.append("</body>\r\n").append("</html>\r\n");
         }
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (Exception ex) {
+            System.out.println("Upload/Class: " + ex.getMessage());
+        }
+        try {
+            con = getConnection();
+        } catch (Exception e) {
+            System.out.println("Upload/Class: " + e.getMessage());
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        System.out.println(System.getProperty("user.home"));
         Path path = Paths.get(System.getProperty("user.home") + "/images/");
         Files.createDirectories(path);
 
@@ -97,15 +110,7 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     public void writeToDatabase(String fileName, String captionName, String formDate, String localPath) {
-        Connection con;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (Exception ex) {
-            System.out.println("Upload/Class: " + ex.getMessage());
-        }
-        try {
-            con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             FileInputStream fin = new FileInputStream(localPath);
@@ -125,10 +130,7 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     public byte[] getUuid(String userId) {
-        Connection con;
         try {
-            con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-
             PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
             s.setString(1, userId);
 
@@ -158,15 +160,7 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     private boolean checkPoster(String fileName) {
-        Connection con;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (Exception ex) {
-            System.out.println("Upload/Class: " + ex.getMessage());
-        }
-        try {
-            con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-
             PreparedStatement s = con.prepareStatement("SELECT userId FROM Photos WHERE fileName = ?;");
             s.setString(1, fileName);
 
@@ -184,15 +178,7 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     private boolean checkUsername(byte[] uuid) {
-        Connection con;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (Exception ex) {
-            System.out.println("Upload/Class: " + ex.getMessage());
-        }
-        try {
-            con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-
             PreparedStatement s = con.prepareStatement("SELECT userId FROM Users WHERE id = ?;");
             s.setBytes(1, uuid);
 
@@ -212,5 +198,9 @@ public class FileUploadServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
 
         return session != null && req.isRequestedSessionIdValid();
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
     }
 }
