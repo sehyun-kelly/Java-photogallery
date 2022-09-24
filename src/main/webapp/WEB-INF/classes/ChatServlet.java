@@ -13,8 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @ServerEndpoint(value = "/chat")
 public class ChatServlet extends HttpServlet {
-    private static String currentUser;
-    private static final AtomicInteger connectionIds = new AtomicInteger(0);
+    private String currentUser;
     private static final Set<ChatServlet> connections =
             new CopyOnWriteArraySet<>();
 

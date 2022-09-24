@@ -12,7 +12,7 @@ import java.util.*;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
-    private static String currentUser;
+    private String currentUser;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
