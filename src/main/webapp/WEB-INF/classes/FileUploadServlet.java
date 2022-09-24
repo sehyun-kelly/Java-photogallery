@@ -152,7 +152,7 @@ public class FileUploadServlet extends HttpServlet {
             String dirList = "Files you have posted:";
             while (rs.next()) {
                 if (checkPoster(rs.getString("fileName"))){
-                    dirList += "<li>" + s + "</li>";
+                    dirList += "<li>" + rs.getString("fileName") + "</li>";
                 }
             }
             return dirList;
