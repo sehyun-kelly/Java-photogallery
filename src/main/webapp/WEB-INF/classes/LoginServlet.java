@@ -4,11 +4,14 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 import java.security.MessageDigest;
 
 public class LoginServlet extends HttpServlet {
+	private static Connection conn;
+
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		SetUp.setUpTable();
@@ -20,7 +23,17 @@ public class LoginServlet extends HttpServlet {
 				+ "<input type=\"submit\" name=\"button\" value=\"Sign in\" />\n"
 				+ "<input type=\"submit\" name=\"button\" value=\"Register\" />\n"+ "</form>\n"
 				+ "</form>\n" + "</body>\n</html\n");
-				
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (Exception ex) {
+			System.out.println("Login/Class: " + ex.getMessage());
+		}
+		try {
+			conn = getConnection();
+		} catch (Exception e) {
+			System.out.println("Login/Class: " + e.getMessage());
+		}
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -35,17 +48,9 @@ public class LoginServlet extends HttpServlet {
 
 		final String sql = "INSERT INTO users VALUES (?, ?, ?);";
 
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-
 		if (Objects.equals(button, "Sign in")) {
 			// System.out.println("sign in pass");
 			try {
-				Connection conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-
 				Statement stmt = conn.createStatement();
 
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -55,6 +60,8 @@ public class LoginServlet extends HttpServlet {
 				while (rs.next()) {
 					String user = rs.getString("userID");
 					byte[] pass = rs.getBytes("password");
+					System.out.println("hash: " + Arrays.toString(hash));
+					System.out.println("pass: " + Arrays.toString(pass));
 					if (user.equals(username) && pass == hash) {
 //						response.setStatus(302);
 						logged = true;
@@ -74,7 +81,6 @@ public class LoginServlet extends HttpServlet {
 		} else if (button.equals("Register")){
 			// System.out.println("register pass");
 			try {
-				Connection conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 				PreparedStatement stmt = conn.prepareStatement(sql);
 
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -95,5 +101,9 @@ public class LoginServlet extends HttpServlet {
 			}
 			response.sendRedirect("login");
 		}
+	}
+
+	private Connection getConnection() throws SQLException {
+		return DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 	}
 }
