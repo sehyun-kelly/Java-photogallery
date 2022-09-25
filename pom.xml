@@ -30,19 +30,19 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.0</version>
+      <version>4.0.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-catalina</artifactId>
-      <version>9.0.43</version>
+      <version>9.0.65</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>RELEASE</version>
+      <version>4.13.2</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -111,15 +111,12 @@
               </artifactItems>
             </configuration>
           </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
           <execution>
             <phase>package</phase>
-            <goals><goal>copy</goal></goals>
+            <id>for-heroku</id>
+            <goals>
+              <goal>copy</goal>
+            </goals>
             <configuration>
               <artifactItems>
                 <artifactItem>
