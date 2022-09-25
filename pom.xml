@@ -94,6 +94,7 @@
                 <version>3.3.0</version>
                 <executions>
                     <execution>
+                        <id>javax</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy</goal>
@@ -113,7 +114,6 @@
                     </execution>
                     <execution>
                         <phase>package</phase>
-                        <id>for-heroku</id>
                         <goals>
                             <goal>copy</goal>
                         </goals>
