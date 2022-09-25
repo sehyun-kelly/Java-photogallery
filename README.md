@@ -1,8 +1,11 @@
-# COMP-3940
+# COMP-3940 Assignment 1
 
 #### Group 3
 Term: Set 3G, Fall 2022 \
 Members: Chengyang Li, Sehyun Park, Alex Pu, Melanie Ta, Shen Yen
+
+### Project Link
+https://comp3940-photogallery.herokuapp.com/login
 
 ### Description
 - This app allows you to upload images, view images in the gallery, search images, and chat with other users! 
