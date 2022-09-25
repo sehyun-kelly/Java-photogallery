@@ -11,6 +11,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class GalleryServlet extends HttpServlet {
+    private static Connection con;
     private int currentIndex = 0;
     private int numRows;
     private final String BASE_URL = System.getProperty("user.home") + "/images/";
@@ -130,8 +131,6 @@ public class GalleryServlet extends HttpServlet {
             System.out.println("Gallery/Class: " + ex.getMessage());
         }
         try {
-            Connection con = getConnection();
-
             //delete with id - to be updated!!!
 //            byte id[] = request.getParameter("pictureId").getBytes();
 //            deleteFile(id);
@@ -178,7 +177,7 @@ public class GalleryServlet extends HttpServlet {
             System.out.println("Gallery/Class: " + ex.getMessage());
         }
         try{
-            Connection con = getConnection();
+            con = getConnection();
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("select * from Photos");
             numRows = 0;
@@ -205,6 +204,7 @@ public class GalleryServlet extends HttpServlet {
         out.println("<script>");
         out.println("let myInterval;");
         out.println("function submitNext(){");
+        out.println("document.getElementById('deleteForm').style.display = 'none';");
         out.println("let currentView = document.querySelector('.currentView');");
         out.println("let currentIndex = currentView.getAttribute('id').split('_')[1];");
         out.println("let nextIndex;");
@@ -226,10 +226,7 @@ public class GalleryServlet extends HttpServlet {
     }
 
     private byte[] getUuid(String userId) {
-        Connection con;
         try {
-            con = getConnection();
-
             PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
             s.setString(1, userId);
 
@@ -245,8 +242,6 @@ public class GalleryServlet extends HttpServlet {
     }
 
     private void deleteFile(byte[] fileID) throws SQLException {
-        Connection con = getConnection();
-
         PreparedStatement preparedStatement = con.prepareStatement(
                     "DELETE FROM Photos where id = ?");
 //
