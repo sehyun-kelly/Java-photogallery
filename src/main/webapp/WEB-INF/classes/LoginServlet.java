@@ -60,8 +60,8 @@ public class LoginServlet extends HttpServlet {
 				while (rs.next()) {
 					String user = rs.getString("userID");
 					byte[] pass = rs.getBytes("password");
-					System.out.println("hash: " + Arrays.toString(hash));
-					System.out.println("pass: " + Arrays.toString(pass));
+					System.out.println("hash: " + user.equals(username));
+					System.out.println("user: " + user + "; username: " + username);
 					if (user.equals(username) && pass == hash) {
 //						response.setStatus(302);
 						logged = true;

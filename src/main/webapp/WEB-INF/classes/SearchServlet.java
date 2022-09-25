@@ -7,7 +7,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class SearchServlet extends HttpServlet {
-
+	private static Connection con;
 	private static String[] CAPTION_FILENAME;
 	private static String[] DATA_FILENAME;
 	private static String[] MY_FILENAME;
@@ -51,10 +51,20 @@ public class SearchServlet extends HttpServlet {
 			out.println(html);
 		}
 
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+		} catch (Exception ex) {
+			System.out.println("Upload/Class: " + ex.getMessage());
+		}
+		try {
+			con = getConnection();
+		} catch (Exception e) {
+			System.out.println("Upload/Class: " + e.getMessage());
+		}
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-System.out.println("?????doPost Called???????????????");
+		System.out.println("?????doPost Called???????????????");
 		response.setContentType("text/html");
 		response.setCharacterEncoding("UTF-8");
 
@@ -123,7 +133,6 @@ System.out.println("?????doPost Called???????????????");
 	}
 
 	public void CheckDateCaption(String date, String caption) {
-		Connection con;
 		String[] myArray = new String[1024];
 		MY_LOOP = -1;
 		try {
@@ -132,7 +141,6 @@ System.out.println("?????doPost Called???????????????");
 			System.out.println("Search/Class: " + ex.getMessage());
 		}
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 			PreparedStatement s = con.prepareStatement("SELECT fileName, picture FROM Photos WHERE dateTaken = '" + date + "' && caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -148,18 +156,11 @@ System.out.println("?????doPost Called???????????????");
 	}
 
 	private void findDate(String date) {
-		Connection con;
 		String[] dateArray = new String[1024];
 		DATE_LOOP = -1;
 //		String filename = null;
 //		System.out.println(date);
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (Exception ex) {
-			System.out.println("Search/Class: " + ex.getMessage());
-		}
-		try {
-			con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 			PreparedStatement s = con.prepareStatement("SELECT fileName, picture FROM Photos WHERE dateTaken = '" + date + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -176,16 +177,9 @@ System.out.println("?????doPost Called???????????????");
 	}
 
 	private void findCaption(String caption) {
-		Connection con;
 		String[] captionArray = new	String[1024];
 		CAPTION_LOOP = -1;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (Exception ex) {
-			System.out.println("Search/Class: " + ex.getMessage());
-		}
-		try {
-			con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 			PreparedStatement s = con.prepareStatement("SELECT fileName, picture FROM Photos WHERE caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -199,12 +193,13 @@ System.out.println("?????doPost Called???????????????");
 		}
 	}
 
-
-
 	private boolean isLoggedIn(HttpServletRequest req) {
 		HttpSession session = req.getSession(false);
 
 		return session != null && req.isRequestedSessionIdValid();
+	}
 
-	}	
+	private Connection getConnection() throws SQLException {
+		return DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
+	}
 }
