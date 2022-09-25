@@ -227,6 +227,7 @@ public class GalleryServlet extends HttpServlet {
 
     private byte[] getUuid(String userId) {
         try {
+            con = getConnection();
             PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
             s.setString(1, userId);
 
