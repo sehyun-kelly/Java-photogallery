@@ -15,7 +15,6 @@ public class SearchServlet extends HttpServlet {
 	private static int CAPTION_LOOP = -1;
 	private static int DATE_LOOP = -1;
 	private static int MY_LOOP = -1;
-	private final String BASE_URL = System.getProperty("user.home") + "/images/";
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (!isLoggedIn(request)) { 
@@ -38,14 +37,18 @@ public class SearchServlet extends HttpServlet {
 					"<body>" +
 					"<div style=\"text-align: right;\">" + userName + "</div>" +
 					"<h2> Search Filter </h2> " +
-			"<form action='search' method = 'post' id = 'searchForm'>" +
-			"<label for='caption'>Caption: </label>" +
-			"<input type='text' id = 'caption' name = 'caption'>" +
-			"<label for='date'>Date: </label>" +
-			"<input type='date' placeholder='yyyy-mm-dd' id = 'date' name = 'date'>" +
-			"<button type='submit' form='searchForm' value='Submit'>Search</button>" +
-			"</form>" +
-			"</body>" +
+					"<form action='search' method = 'post' id = 'searchForm'>" +
+					"<label for='caption'>Caption: </label>" +
+					"<input type='text' id = 'caption' name = 'caption'>" +
+					"<label for='date'>Date: </label>" +
+					"<input type='date' placeholder='yyyy-mm-dd' id = 'date' name = 'date'>" +
+					"<button type='submit' form='searchForm' value='Submit'>Search</button>" +
+					"</form>" +
+					"<div>" +
+					"<form action='main' method='get'>" +
+					"<button class='button' id='main'>Main</button>" +
+					"</div>" +
+					"</body>" +
 					"</html>";
 			PrintWriter out = response.getWriter();
 			out.println(html);
@@ -62,12 +65,16 @@ public class SearchServlet extends HttpServlet {
 		} else {
 
 			HttpSession session = request.getSession(false);
+			String userName = "Logged in as: " + session.getAttribute("USER_ID");
 
 			PrintWriter out = response.getWriter();
 			String caption = request.getParameter("caption");
 			String date = request.getParameter("date");
-			System.out.println("caption: " + caption);
-			System.out.println("date: " + date);
+			out.println("<div style=\"text-align: right;\">\n");
+			out.println(userName);
+			out.println("\n</div>");
+			out.println("<div>Search caption: " + caption);
+			out.println("</div><div>Search date: " + date + "<div/>");
 			findCaption(caption);
 			findDate(date);
 			CheckDateCaption(date, caption);
@@ -118,17 +125,16 @@ public class SearchServlet extends HttpServlet {
 					out.println("<div>Caption and Data not match in one photo.</div>");
 				}
 			}
+			out.println("<br/><div>");
+			out.println("<form action='main' method='get'>");
+			out.println("<button class='button' id='main'>Main</button>");
+			out.println("</div>");
 		}
 	}
 
 	public void CheckDateCaption(String date, String caption) {
 		String[] myArray = new String[1024];
 		MY_LOOP = -1;
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (Exception ex) {
-			System.out.println("Search/Class: " + ex.getMessage());
-		}
 		try {
 			PreparedStatement s = con.prepareStatement("SELECT fileName, picture FROM Photos WHERE dateTaken = '" + date + "' && caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();

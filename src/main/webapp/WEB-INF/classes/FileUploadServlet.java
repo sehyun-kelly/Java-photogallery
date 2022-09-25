@@ -49,10 +49,11 @@ public class FileUploadServlet extends HttpServlet {
             writer.append("<br />\n");
             writer.append("<input type=\"submit\" value=\"Submit\"/>\r\n");
             writer.append("</form>\r\n");
+            writer.append("<br />\n");
             writer.append("<div>");
             writer.append("<form action='main' method='get'>");
             writer.append("<button class='button' id='main'>Main</button>");
-            writer.append("</div><br>");
+            writer.append("</div>");
             writer.append("</form>");
             writer.append("</body>\r\n").append("</html>\r\n");
         }
@@ -89,10 +90,11 @@ public class FileUploadServlet extends HttpServlet {
         String bottomPart = "</body></html>";
         out.println(topPart);
         out.println("<ul>" + getListing() + "</ul>");
+        out.println("<br />\n");
         out.println("<div>");
         out.println("<form action='main' method='get'>");
         out.println("<button class='button' id='main'>Main</button>");
-        out.println("</div><br>");
+        out.println("</div>");
         out.println("</form>");
         out.println(bottomPart);
     }

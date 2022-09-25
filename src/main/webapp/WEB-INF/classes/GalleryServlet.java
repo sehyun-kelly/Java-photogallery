@@ -14,8 +14,6 @@ public class GalleryServlet extends HttpServlet {
     private final Connection con = SetUp.getConnection();
     private int currentIndex = 0;
     private int numRows;
-    private final String BASE_URL = System.getProperty("user.home") + "/images/";
-
     private ArrayList<byte[]> idList;
     private ArrayList<byte[]> userIdList;
     private ArrayList<Blob> pictureList;
@@ -111,7 +109,7 @@ public class GalleryServlet extends HttpServlet {
             out.println("<div>");
             out.println("<form action='main' method='get'>");
             out.println("<button class='button' id='main'>Main</button>");
-            out.println("</div><br>");
+            out.println("</div>");
             out.println("</form>");
             writeScript(out);
             out.println("</body>");
