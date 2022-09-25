@@ -50,9 +50,9 @@ public class GalleryServlet extends HttpServlet {
                 else if(currentIndex == 0) currentIndex = numRows - 1;
             }else currentIndex = 0;
 
-            byte username_uuid[] = getUuid(username);
-            byte userIdList_uuid[] = userIdList.get(currentIndex);
-            byte idList_id[] = idList.get(currentIndex);
+            byte[] username_uuid = getUuid(username);
+            byte[] userIdList_uuid = userIdList.get(currentIndex);
+            byte[] idList_id = idList.get(currentIndex);
             String pictureId = new String(idList_id);
 
             PrintWriter out = response.getWriter();

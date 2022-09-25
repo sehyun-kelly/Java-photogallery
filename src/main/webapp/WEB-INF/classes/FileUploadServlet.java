@@ -143,17 +143,17 @@ public class FileUploadServlet extends HttpServlet {
             PreparedStatement s = con.prepareStatement("SELECT fileName FROM Photos;");
             ResultSet rs = s.executeQuery();
 
-            String dirList = "Files you have posted:";
+            StringBuilder dirList = new StringBuilder("Files you have posted:");
             while (rs.next()) {
                 if (checkPoster(rs.getString("fileName"))){
-                    dirList += "<li>" + rs.getString("fileName") + "</li>";
+                    dirList.append("<li>").append(rs.getString("fileName")).append("</li>");
                 }
             }
-            return dirList;
+            return dirList.toString();
         } catch (Exception e) {
             System.out.println("Upload/getListing: " + e.getMessage());
         }
-        return "Empty.";
+        return "Oops, nothing is here.";
     }
 
     private boolean checkPoster(String fileName) {

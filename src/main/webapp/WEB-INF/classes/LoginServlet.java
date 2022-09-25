@@ -10,7 +10,6 @@ import java.util.UUID;
 import java.security.MessageDigest;
 
 public class LoginServlet extends HttpServlet {
-	private static Connection conn;
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
@@ -23,34 +22,23 @@ public class LoginServlet extends HttpServlet {
 				+ "<input type=\"submit\" name=\"button\" value=\"Sign in\" />\n"
 				+ "<input type=\"submit\" name=\"button\" value=\"Register\" />\n"+ "</form>\n"
 				+ "</form>\n" + "</body>\n</html\n");
-
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (Exception ex) {
-			System.out.println("Login/Class: " + ex.getMessage());
-		}
-		try {
-			conn = getConnection();
-		} catch (Exception e) {
-			System.out.println("Login/Class: " + e.getMessage());
-		}
 	}
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String button = request.getParameter("button");
 		response.setContentType("text/html");
-		String title = "Logged in as: ";
 		String username = request.getParameter("user_id");
 		String password = request.getParameter("password");
 		HttpSession session = request.getSession(true);
 		session.setAttribute("USER_ID", username);
-		Boolean logged = false;
+		boolean logged = false;
 
 		final String sql = "INSERT INTO users VALUES (?, ?, ?);";
 
 		if (Objects.equals(button, "Sign in")) {
 			// System.out.println("sign in pass");
 			try {
+				Connection conn = SetUp.getConnection();
 				Statement stmt = conn.createStatement();
 
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -79,6 +67,7 @@ public class LoginServlet extends HttpServlet {
 		} else if (button.equals("Register")){
 			// System.out.println("register pass");
 			try {
+				Connection conn = SetUp.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(sql);
 
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
@@ -99,9 +88,5 @@ public class LoginServlet extends HttpServlet {
 			}
 			response.sendRedirect("login");
 		}
-	}
-
-	private Connection getConnection() throws SQLException {
-		return DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 	}
 }

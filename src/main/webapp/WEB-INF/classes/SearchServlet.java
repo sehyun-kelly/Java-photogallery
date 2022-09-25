@@ -85,8 +85,8 @@ public class SearchServlet extends HttpServlet {
 				if ((CAPTION_FILENAME != null) & (CAPTION_LOOP >= 0)) {
 					for (int i = 0; i <= CAPTION_LOOP; i++) {
 						try {
-							byte[] imagebytes = MY_BLOB[i].getBytes(1, (int)MY_BLOB[i].length());
-							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imagebytes) + "\" alt=" + CAPTION_FILENAME[i] + " width=400 height=350>");
+							byte[] imageBytes = MY_BLOB[i].getBytes(1, (int)MY_BLOB[i].length());
+							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imageBytes) + "\" alt=" + CAPTION_FILENAME[i] + " width=400 height=350>");
 						} catch (SQLException e) {
 							System.out.println("Search/Post: " + e.getMessage());
 						}
@@ -100,8 +100,8 @@ public class SearchServlet extends HttpServlet {
 				if ((DATA_FILENAME != null) & (DATE_LOOP >= 0)) {
 					for (int j = 0; j <= DATE_LOOP; j++) {
 						try {
-							byte[] imagebytes = MY_BLOB[j].getBytes(1, (int)MY_BLOB[j].length());
-							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imagebytes) + "\" alt=" + DATA_FILENAME[j] + " width=400 height=350>");
+							byte[] imageBytes = MY_BLOB[j].getBytes(1, (int)MY_BLOB[j].length());
+							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imageBytes) + "\" alt=" + DATA_FILENAME[j] + " width=400 height=350>");
 						} catch (SQLException e) {
 							System.out.println("Search/Post: " + e.getMessage());
 						}
@@ -114,8 +114,8 @@ public class SearchServlet extends HttpServlet {
 				if (MY_LOOP >= 0) {
 					for (int k = 0; k <= MY_LOOP; k++) {
 						try {
-							byte[] imagebytes = MY_BLOB[k].getBytes(1, (int)MY_BLOB[k].length());
-							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imagebytes) + "\" alt=" + MY_FILENAME[k] + " width=400 height=350>");
+							byte[] imageBytes = MY_BLOB[k].getBytes(1, (int)MY_BLOB[k].length());
+							out.println("<img id = \"img_src\" src=\"data:image/png;base64," + Base64.getEncoder().encodeToString(imageBytes) + "\" alt=" + MY_FILENAME[k] + " width=400 height=350>");
 						} catch (SQLException e) {
 							System.out.println("Search/Post: " + e.getMessage());
 						}
