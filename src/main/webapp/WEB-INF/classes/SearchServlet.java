@@ -7,7 +7,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class SearchServlet extends HttpServlet {
-	private static final Connection con = SetUp.getConnection();
+	private final Connection con = SetUp.getConnection();
 	private static String[] CAPTION_FILENAME;
 	private static String[] DATA_FILENAME;
 	private static String[] MY_FILENAME;

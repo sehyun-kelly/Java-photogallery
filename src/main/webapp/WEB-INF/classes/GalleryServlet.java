@@ -11,7 +11,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class GalleryServlet extends HttpServlet {
-    private static final Connection con = SetUp.getConnection();
+    private final Connection con = SetUp.getConnection();
     private int currentIndex = 0;
     private int numRows;
     private final String BASE_URL = System.getProperty("user.home") + "/images/";

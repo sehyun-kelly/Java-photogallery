@@ -15,7 +15,7 @@ import java.util.*;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
-    private static final Connection con = SetUp.getConnection();
+    private final Connection con = SetUp.getConnection();
     private String currentUser;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
