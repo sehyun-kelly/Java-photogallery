@@ -44,7 +44,7 @@ public class ChatServlet extends HttpServlet {
                 "    <title>User Chat</title>\n" +
                 "    <style type=\"text/css\">\n" +
                 "        input#chat {\n" +
-                "        width: 410px\n" +
+                "        width: 500px\n" +
                 "    }\n" +
                 "\n" +
                 "    #console-container {\n" +
@@ -55,7 +55,7 @@ public class ChatServlet extends HttpServlet {
                 "        border: 1px solid #CCCCCC;\n" +
                 "        border-right-color: #999999;\n" +
                 "        border-bottom-color: #999999;\n" +
-                "        height: 20px;\n" +
+                "        height: 300px;\n" +
                 "        overflow-y: scroll;\n" +
                 "        padding: 5px;\n" +
                 "        width: 100%;\n" +
