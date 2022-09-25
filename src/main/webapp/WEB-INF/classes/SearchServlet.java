@@ -7,7 +7,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class SearchServlet extends HttpServlet {
-	private static Connection con;
+	private static final Connection con = SetUp.getConnection();
 	private static String[] CAPTION_FILENAME;
 	private static String[] DATA_FILENAME;
 	private static String[] MY_FILENAME;
@@ -49,17 +49,6 @@ public class SearchServlet extends HttpServlet {
 					"</html>";
 			PrintWriter out = response.getWriter();
 			out.println(html);
-		}
-
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-		} catch (Exception ex) {
-			System.out.println("Upload/Class: " + ex.getMessage());
-		}
-		try {
-			con = getConnection();
-		} catch (Exception e) {
-			System.out.println("Upload/Class: " + e.getMessage());
 		}
 	}
 
@@ -197,9 +186,5 @@ public class SearchServlet extends HttpServlet {
 		HttpSession session = req.getSession(false);
 
 		return session != null && req.isRequestedSessionIdValid();
-	}
-
-	private Connection getConnection() throws SQLException {
-		return DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 	}
 }

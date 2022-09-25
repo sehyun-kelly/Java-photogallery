@@ -11,7 +11,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class GalleryServlet extends HttpServlet {
-    private static Connection con;
+    private static final Connection con = SetUp.getConnection();
     private int currentIndex = 0;
     private int numRows;
     private final String BASE_URL = System.getProperty("user.home") + "/images/";
@@ -171,13 +171,7 @@ public class GalleryServlet extends HttpServlet {
 
         Blob blobImage;
 
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (Exception ex) {
-            System.out.println("Gallery/Class: " + ex.getMessage());
-        }
         try{
-            con = getConnection();
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("select * from Photos");
             numRows = 0;
@@ -193,7 +187,6 @@ public class GalleryServlet extends HttpServlet {
                 numRows++;
             }
             stmt.close();
-            con.close();
         }catch(Exception e){
             System.out.println("gallery/getIdFromDB: " + e.getMessage());
         }
@@ -227,7 +220,6 @@ public class GalleryServlet extends HttpServlet {
 
     private byte[] getUuid(String userId) {
         try {
-            con = getConnection();
             PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
             s.setString(1, userId);
 
@@ -261,10 +253,6 @@ public class GalleryServlet extends HttpServlet {
             preparedStatement.executeUpdate();
             preparedStatement.close();
 
-    }
-    private Connection getConnection() throws SQLException {
-        Connection con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
-        return con;
     }
 }
 
