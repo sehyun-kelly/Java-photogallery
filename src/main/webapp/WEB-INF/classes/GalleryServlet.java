@@ -204,7 +204,7 @@ public class GalleryServlet extends HttpServlet {
         out.println("<script>");
         out.println("let myInterval;");
         out.println("function submitNext(){");
-//        out.println("document.getElementById('deleteForm').style.display = 'none';");
+        out.println("document.getElementById('deleteForm').style.display = 'none';");
         out.println("let currentView = document.querySelector('.currentView');");
         out.println("let currentIndex = currentView.getAttribute('id').split('_')[1];");
         out.println("let nextIndex;");
