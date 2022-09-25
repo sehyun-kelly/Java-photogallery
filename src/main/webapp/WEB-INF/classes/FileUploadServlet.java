@@ -15,7 +15,7 @@ import java.util.*;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
-    private final Connection con = SetUp.getConnection();
+    private Connection con = SetUp.getConnection();
     private String currentUser;
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -101,6 +101,7 @@ public class FileUploadServlet extends HttpServlet {
 
     public void writeToDatabase(String fileName, String captionName, String formDate, String localPath) {
         try {
+            con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             FileInputStream fin = new FileInputStream(localPath);
@@ -121,6 +122,7 @@ public class FileUploadServlet extends HttpServlet {
 
     public byte[] getUuid(String userId) {
         try {
+            con = SetUp.getConnection();
             PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
             s.setString(1, userId);
 
@@ -137,6 +139,7 @@ public class FileUploadServlet extends HttpServlet {
 
     private String getListing() {
         try {
+            con = SetUp.getConnection();
             PreparedStatement s = con.prepareStatement("SELECT fileName FROM Photos;");
             ResultSet rs = s.executeQuery();
 
@@ -155,6 +158,7 @@ public class FileUploadServlet extends HttpServlet {
 
     private boolean checkPoster(String fileName) {
         try {
+            con = SetUp.getConnection();
             PreparedStatement s = con.prepareStatement("SELECT userId FROM Photos WHERE fileName = ?;");
             s.setString(1, fileName);
 
@@ -173,6 +177,7 @@ public class FileUploadServlet extends HttpServlet {
 
     private boolean checkUsername(byte[] uuid) {
         try {
+            con = SetUp.getConnection();
             PreparedStatement s = con.prepareStatement("SELECT userId FROM Users WHERE id = ?;");
             s.setBytes(1, uuid);
 

@@ -66,7 +66,7 @@ public class SetUp {
 
     public static Connection getConnection() {
         try {
-            if (con != null && !con.isClosed()) return con;
+            if (con != null && con.isValid(0)) return con;
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("SetUp/getCurrentConnection: " + e.getMessage());

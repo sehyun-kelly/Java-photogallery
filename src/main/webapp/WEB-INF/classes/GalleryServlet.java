@@ -11,7 +11,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class GalleryServlet extends HttpServlet {
-    private final Connection con = SetUp.getConnection();
+    private Connection con = SetUp.getConnection();
     private int currentIndex = 0;
     private int numRows;
     private ArrayList<byte[]> idList;
@@ -124,16 +124,12 @@ public class GalleryServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Gallery/Class: " + ex.getMessage());
-        }
-        try {
             //delete with id - to be updated!!!
 //            byte id[] = request.getParameter("pictureId").getBytes();
 //            deleteFile(id);
 
             //delete with fileName
+            con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
                     "DELETE FROM Photos where fileName = ?");
             String fileName = request.getParameter("fileName");
@@ -152,11 +148,7 @@ public class GalleryServlet extends HttpServlet {
     private boolean isLoggedIn(HttpServletRequest req) {
         HttpSession session = req.getSession(false);
 
-        if (session == null || !req.isRequestedSessionIdValid()) {
-            return false;
-        }else{
-            return true;
-        }
+        return session != null && req.isRequestedSessionIdValid();
     }
 
     private void getDataFromDB(PrintWriter out){
@@ -170,6 +162,7 @@ public class GalleryServlet extends HttpServlet {
         Blob blobImage;
 
         try{
+            con = SetUp.getConnection();
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery("select * from Photos");
             numRows = 0;
@@ -218,6 +211,7 @@ public class GalleryServlet extends HttpServlet {
 
     private byte[] getUuid(String userId) {
         try {
+            con = SetUp.getConnection();
             PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
             s.setString(1, userId);
 
@@ -233,6 +227,7 @@ public class GalleryServlet extends HttpServlet {
     }
 
     private void deleteFile(byte[] fileID) throws SQLException {
+        con = SetUp.getConnection();
         PreparedStatement preparedStatement = con.prepareStatement(
                     "DELETE FROM Photos where id = ?");
 //

@@ -7,7 +7,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class SearchServlet extends HttpServlet {
-	private final Connection con = SetUp.getConnection();
+	private Connection con = SetUp.getConnection();
 	private static String[] CAPTION_FILENAME;
 	private static String[] DATA_FILENAME;
 	private static String[] MY_FILENAME;
@@ -29,7 +29,6 @@ public class SearchServlet extends HttpServlet {
 		if (!isLoggedIn) {
             response.setStatus(302);
             response.sendRedirect("login");
-
         } else {
 			String userName = "Logged in as: " + session.getAttribute("USER_ID");
 			String html = "<!DOCTYPE html>" +
@@ -136,6 +135,7 @@ public class SearchServlet extends HttpServlet {
 		String[] myArray = new String[1024];
 		MY_LOOP = -1;
 		try {
+			con = SetUp.getConnection();
 			PreparedStatement s = con.prepareStatement("SELECT fileName, picture FROM Photos WHERE dateTaken = '" + date + "' && caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -156,6 +156,7 @@ public class SearchServlet extends HttpServlet {
 //		String filename = null;
 //		System.out.println(date);
 		try {
+			con = SetUp.getConnection();
 			PreparedStatement s = con.prepareStatement("SELECT fileName, picture FROM Photos WHERE dateTaken = '" + date + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -175,6 +176,7 @@ public class SearchServlet extends HttpServlet {
 		String[] captionArray = new	String[1024];
 		CAPTION_LOOP = -1;
 		try {
+			con = SetUp.getConnection();
 			PreparedStatement s = con.prepareStatement("SELECT fileName, picture FROM Photos WHERE caption = '" + caption + "';");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
