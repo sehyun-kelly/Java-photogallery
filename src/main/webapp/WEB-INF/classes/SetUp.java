@@ -46,7 +46,7 @@ public class SetUp {
             s.executeUpdate("CREATE TABLE IF NOT EXISTS Users (" +
                     "id VARBINARY(16)," +
                     "userId VARCHAR(50) UNIQUE," +
-                    "password VARCHAR(255)," +
+                    "password VARBINARY(64)," +
                     "PRIMARY KEY (id));");
             s.executeUpdate("CREATE TABLE IF NOT EXISTS Photos(" +
                     "id VARBINARY(16)," +

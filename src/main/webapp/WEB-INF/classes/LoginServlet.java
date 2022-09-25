@@ -1,6 +1,8 @@
 import javax.servlet.http.*;
 import javax.servlet.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Objects;
 import java.util.UUID;
@@ -47,7 +49,7 @@ public class LoginServlet extends HttpServlet {
 				Statement stmt = conn.createStatement();
 
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-				byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+				byte[] hash = messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
 
 				ResultSet rs = stmt.executeQuery("SELECT * FROM users");
 				while (rs.next()) {
@@ -61,6 +63,8 @@ public class LoginServlet extends HttpServlet {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				System.out.println("Account doesn't exist");
+			} catch (NoSuchAlgorithmException e) {
+				System.out.println(e.getMessage());
 			}
 			if (logged) {
 				response.sendRedirect("main");
@@ -74,7 +78,7 @@ public class LoginServlet extends HttpServlet {
 				PreparedStatement stmt = conn.prepareStatement(sql);
 
 				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-				byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+				byte[] hash = messageDigest.digest(password.getBytes(StandardCharsets.UTF_8));
 
 				stmt.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
 				stmt.setString(2, username);
@@ -85,6 +89,9 @@ public class LoginServlet extends HttpServlet {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				System.out.println("Account exists");
+			} catch (NoSuchAlgorithmException e) {
+				System.out.println(e.getMessage());
+
 			}
 			response.sendRedirect("login");
 		}
