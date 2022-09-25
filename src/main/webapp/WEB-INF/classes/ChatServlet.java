@@ -48,14 +48,14 @@ public class ChatServlet extends HttpServlet {
                 "    }\n" +
                 "\n" +
                 "    #console-container {\n" +
-                "        width: 400px;\n" +
+                "        width: 500px;\n" +
                 "    }\n" +
                 "\n" +
                 "    #console {\n" +
                 "        border: 1px solid #CCCCCC;\n" +
                 "        border-right-color: #999999;\n" +
                 "        border-bottom-color: #999999;\n" +
-                "        height: 170px;\n" +
+                "        height: 20px;\n" +
                 "        overflow-y: scroll;\n" +
                 "        padding: 5px;\n" +
                 "        width: 100%;\n" +
@@ -64,6 +64,7 @@ public class ChatServlet extends HttpServlet {
                 "    #console p {\n" +
                 "        padding: 0;\n" +
                 "        margin: 0;\n" +
+                "        font-size: 110%;\n" +
                 "    }\n" +
                 "    ></style>\n" +
                 "    <script type=\"application/javascript\">\n" +
