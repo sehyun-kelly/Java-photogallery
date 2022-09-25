@@ -16,7 +16,7 @@ public class SetUp {
             s.executeUpdate("CREATE TABLE Users (" +
                     "id VARBINARY(16)," +
                     "userId VARCHAR(50) UNIQUE," +
-                    "password VARCHAR(255)," +
+                    "password VARBINARY(64)," +
                     "PRIMARY KEY (id));");
             s.executeUpdate("CREATE TABLE Photos(" +
                     "id VARBINARY(16)," +

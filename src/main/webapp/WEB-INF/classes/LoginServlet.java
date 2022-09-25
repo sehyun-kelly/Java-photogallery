@@ -4,7 +4,7 @@ import java.io.*;
 import java.sql.*;
 import java.util.Objects;
 import java.util.UUID;
-
+import java.security.MessageDigest;
 
 public class LoginServlet extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -40,17 +40,20 @@ public class LoginServlet extends HttpServlet {
 		}
 
 		if (Objects.equals(button, "Sign in")) {
-			System.out.println("sign in pass");
+			// System.out.println("sign in pass");
 			try {
 				Connection conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 
 				Statement stmt = conn.createStatement();
 
+				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+				byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+
 				ResultSet rs = stmt.executeQuery("SELECT * FROM users");
 				while (rs.next()) {
 					String user = rs.getString("userID");
-					String pass = rs.getString("password");
-					if (user.equals(username) && pass.equals(password)) {
+					byte[] pass = rs.getBytes("password");
+					if (user.equals(username) && pass == hash) {
 //						response.setStatus(302);
 						logged = true;
 					}
@@ -65,14 +68,17 @@ public class LoginServlet extends HttpServlet {
 				response.sendRedirect("login");
 			}
 		} else if (button.equals("Register")){
-			System.out.println("register pass");
+			// System.out.println("register pass");
 			try {
 				Connection conn = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
 				PreparedStatement stmt = conn.prepareStatement(sql);
 
+				MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+				byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+
 				stmt.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
 				stmt.setString(2, username);
-				stmt.setString(3, password);
+				stmt.setBytes(3, hash);
 				stmt.executeUpdate();
 
 				System.out.println("Account created");
