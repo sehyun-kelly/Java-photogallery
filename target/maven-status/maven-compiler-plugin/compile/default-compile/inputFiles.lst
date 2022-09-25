@@ -1,9 +1,0 @@
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/SearchServlet.java
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/MainServlet.java
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/ChatServlet.java
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/GalleryServlet.java
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/LoginServlet.java
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/LogoutServlet.java
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/SetUp.java
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/FileUploadServlet.java
-/usr/local/apache-tomcat-9.0.65/webapps/photogallery/src/main/webapp/WEB-INF/classes/UuidGenerator.java
