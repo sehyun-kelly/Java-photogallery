@@ -29,7 +29,7 @@ public class FileUploadServlet extends HttpServlet {
             currentUser = "guest";
         } else {
             currentUser = session.getAttribute("USER_ID").toString();
-            //close the else stmt to test for guest login
+            //close else statement to test without session
         }
 //            String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
             String loginMsg = "Logged in as: " + currentUser;
@@ -60,21 +60,7 @@ public class FileUploadServlet extends HttpServlet {
             writer.append("</div>");
             writer.append("</form>");
             writer.append("</body>\r\n").append("</html>\r\n");
-<<<<<<< HEAD
-=======
 
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (Exception ex) {
-            System.out.println("Upload/Class: " + ex.getMessage());
-        }
-        try {
-            con = getConnection();
-        } catch (Exception e) {
-            System.out.println("Upload/Class: " + e.getMessage());
->>>>>>> 1c34e6e (Testing file upload page without session)
-        }
     }
 
     @Override
