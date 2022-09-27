@@ -93,6 +93,7 @@ public class FileUploadServlet extends HttpServlet {
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
+        out.println(filePart.getSubmittedFileName());
         out.println("<ul>" + getListing() + "</ul>");
         out.println("<br />\n");
         out.println("<div>");

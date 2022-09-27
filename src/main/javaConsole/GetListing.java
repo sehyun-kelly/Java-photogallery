@@ -1,10 +1,19 @@
 import java.net.*;
 import java.io.*;
+import java.util.*;
+
     
 public class GetListing {
     public static void main(String[] args) throws Exception{
+        sendPOST();
+        System.out.println("POST DONE");
+    }
 
+    private static void getFileInput(){
+        Scanner scanner = new Scanner(System.in);
 
+    }
+    private static void sendPOST() throws IOException {
         HttpURLConnection conn = null;
         BufferedReader reader = null;
         try {
