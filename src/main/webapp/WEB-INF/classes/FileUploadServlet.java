@@ -66,7 +66,7 @@ public class FileUploadServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        System.out.println("does it ever get here?");
         Path path = Paths.get(System.getProperty("user.home") + "/images/");
         Files.createDirectories(path);
 
@@ -78,6 +78,7 @@ public class FileUploadServlet extends HttpServlet {
         if (fileName.equals("")) {
             response.setStatus(302);
             response.sendRedirect("upload");
+            System.out.println("return to upload");
             return;
         }
 
@@ -93,7 +94,6 @@ public class FileUploadServlet extends HttpServlet {
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
-        out.println(filePart.getSubmittedFileName());
         out.println("<ul>" + getListing() + "</ul>");
         out.println("<br />\n");
         out.println("<div>");
