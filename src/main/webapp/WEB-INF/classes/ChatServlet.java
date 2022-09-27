@@ -22,7 +22,7 @@ public class ChatServlet extends HttpServlet {
     private Session session;
 
     public ChatServlet() {
-        index = connectionIds.getAndIncrement() - 1;
+        index = username.size();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
