@@ -2,9 +2,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class HttpPostMultipart {
     private final String boundary;
@@ -110,14 +108,70 @@ public class HttpPostMultipart {
         return response;
     }
 
+    private String getFileName(Scanner scanner){
+        System.out.println("Please enter the file name of the image(png only) include the path: ");
+        System.out.println("Ex.) /Users/Desktop/hello.png");
+        String fileName = scanner.nextLine();
+
+        while(fileName.charAt(0) != '/' || !fileName.contains(".png")){
+            if(!fileName.contains(".png")) System.out.println("No png file entered! Please enter the path again:");
+            else System.out.println("Wrong path! Please enter the path again: ");
+            fileName = scanner.nextLine();
+        }
+
+        return fileName;
+    }
+
+    private String getCaption(Scanner scanner){
+        System.out.println("Please enter the caption for your image: ");
+        String caption = scanner.nextLine();
+
+        return caption;
+    }
+
+    private String getDate(Scanner scanner){
+        final int DATE_LENGTH = 10;
+        System.out.println("Please enter the date: ");
+        System.out.println("Ex) 2022-09-24 ");
+        String date = scanner.nextLine();
+
+        while(date.length() != DATE_LENGTH
+                || (date.split("-")[0].length() != 4
+                || date.split("-")[1].length() != 2
+                || date.split("-")[2].length() != 2)
+                || !date.contains("-")){
+            System.out.println("Wrong date format! Please enter the date in ####-##-## format: ");
+            date = scanner.nextLine();
+        }
+
+        return date;
+    }
+
+    private HashMap<String, String> getParams(){
+        HashMap<String, String> postParams = new HashMap<>();
+
+        Scanner scanner = new Scanner(System.in);
+        String fileName=getFileName(scanner);
+        String caption=getCaption(scanner);
+        String date=getDate(scanner);
+
+        postParams.put("fileName", fileName);
+        postParams.put("caption", caption);
+        postParams.put("date", date);
+
+        return postParams;
+    }
+
     public static void main(String[] args) {
         try {
             HttpPostMultipart multipart = new HttpPostMultipart("https://comp3940-photogallery.herokuapp.com/consoleUpload", "utf-8");
+            HashMap<String, String> params = multipart.getParams();
+
             // Add form field
-            multipart.addFormField("caption", "new console upload test");
-            multipart.addFormField("date", "2021-08-14");
+            multipart.addFormField("caption", params.get("caption"));
+            multipart.addFormField("date", params.get("date"));
             // Add file
-            File file = new File("/Users/kelly/Desktop/cutie.png");
+            File file = new File(params.get("fileName"));
             multipart.addFilePart("fileName", file);
             // Print result
             String response = multipart.finish();

@@ -92,7 +92,7 @@ public class ConsoleUploadServlet extends HttpServlet {
         filePart.write(localPath);
 
         PrintWriter out = response.getWriter();
-        writeToDatabase(fileName, captionName, formDate, localPath, currentUser);
+        writeToDatabase(out, fileName, captionName, formDate, localPath, currentUser);
 
         response.setContentType("text/html");
 
@@ -116,12 +116,14 @@ public class ConsoleUploadServlet extends HttpServlet {
         out.println(bottomPart);
     }
 
-    public void writeToDatabase(String fileName, String captionName, String formDate, String localPath, String currentUser) {
+    public void writeToDatabase(PrintWriter out, String fileName, String captionName, String formDate, String localPath, String currentUser) {
+        out.println("write to db");
         try {
             con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             FileInputStream fin = new FileInputStream(localPath);
+            out.println(fileName + " " + captionName + " " + formDate + " " + localPath + " " + currentUser);
 
             preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
             preparedStatement.setBytes(2, getUuid(currentUser));
