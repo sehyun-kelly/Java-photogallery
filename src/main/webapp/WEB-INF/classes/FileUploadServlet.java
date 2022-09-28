@@ -73,7 +73,7 @@ public class FileUploadServlet extends HttpServlet {
         String captionName = request.getParameter("caption");
         String formDate = request.getParameter("date");
 //        String fileName = filePart.getSubmittedFileName();
-        String fileName = "";
+        String fileName = request.getParameter("fileName");
 
 //        if (fileName.equals("")) {
 //            response.setStatus(302);

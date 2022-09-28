@@ -4,7 +4,7 @@ import java.util.*;
 
     
 public class GetListing {
-    private static String PARAM = "fileName=dog.png&caption=doggie&date=2022-09-27";
+    private static String PARAM = "fileName=dog&caption=doggie&date=2022-09-27";
 
     public static void main(String[] args) throws Exception{
         sendPOST();
