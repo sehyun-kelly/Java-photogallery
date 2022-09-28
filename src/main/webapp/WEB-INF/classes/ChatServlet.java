@@ -33,10 +33,14 @@ public class ChatServlet extends HttpServlet {
         boolean isLoggedIn = isLoggedIn(request);
         if (!isLoggedIn) {
             response.setStatus(302);
-            response.sendRedirect("login");
+            if (request.getParameter("username").isEmpty()) {
+                response.sendRedirect("login");
+            } else {
+                username.add("Guest");
+            }
+        } else {
+            username.add(session.getAttribute("USER_ID").toString());
         }
-
-        username.add(session.getAttribute("USER_ID").toString());
         String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
         String html = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" +
