@@ -24,14 +24,10 @@ public class ConsoleUploadServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         boolean isLoggedIn = isLoggedIn(request);
         if (!isLoggedIn) {
-//            response.setStatus(302);
-//            response.sendRedirect("login");
             currentUser = "guest";
         } else {
             currentUser = session.getAttribute("USER_ID").toString();
-            //close else statement to test without session
         }
-//            String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
         String loginMsg = "Logged in as: " + currentUser;
         PrintWriter writer = response.getWriter();
         writer.append("<!DOCTYPE html>\r\n")
@@ -69,12 +65,9 @@ public class ConsoleUploadServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         boolean isLoggedIn = isLoggedIn(request);
         if (!isLoggedIn) {
-//            response.setStatus(302);
-//            response.sendRedirect("login");
             currentUser = "guest";
         } else {
             currentUser = session.getAttribute("USER_ID").toString();
-            //close else statement to test without session
         }
 
         Path path = Paths.get(System.getProperty("user.home") + "/images/");
@@ -99,21 +92,21 @@ public class ConsoleUploadServlet extends HttpServlet {
         filePart.write(localPath);
 
         PrintWriter out = response.getWriter();
-        writeToDatabase(out, fileName, captionName, formDate, localPath, currentUser);
+        writeToDatabase(fileName, captionName, formDate, localPath, currentUser);
 
         response.setContentType("text/html");
 
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
-        out.println("<ul>" + getListing() + "</ul>");
 
-        /////////POST testing/////////
+        out.println("<div>Just Uploaded: ");
         out.println(fileName);
         out.println(captionName);
         out.println(formDate);
-        /////////POST testing/////////
+        out.println("</div>");
 
+        out.println("<ul>" + getListing() + "</ul>");
         out.println("<br />\n");
         out.println("<div>");
         out.println("<form action='main' method='get'>");
@@ -123,14 +116,12 @@ public class ConsoleUploadServlet extends HttpServlet {
         out.println(bottomPart);
     }
 
-    public void writeToDatabase(PrintWriter out, String fileName, String captionName, String formDate, String localPath, String currentUser) {
-        out.println("writeToDB");
+    public void writeToDatabase(String fileName, String captionName, String formDate, String localPath, String currentUser) {
         try {
             con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             FileInputStream fin = new FileInputStream(localPath);
-            out.println(fileName + " " + captionName + " " + formDate + " " + localPath + " " + currentUser);
 
             preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
             preparedStatement.setBytes(2, getUuid(currentUser));
@@ -142,7 +133,7 @@ public class ConsoleUploadServlet extends HttpServlet {
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (Exception e) {
-            System.out.println("Upload/writeToDatabase: " + e.getMessage());
+            System.out.println("consoleUpload/writeToDatabase: " + e.getMessage());
         }
     }
 
@@ -158,7 +149,7 @@ public class ConsoleUploadServlet extends HttpServlet {
             }
             return rs.getBytes("id");
         } catch (Exception e) {
-            System.out.println("Upload/getUuid: " + e.getMessage());
+            System.out.println("consoleUpload/getUuid: " + e.getMessage());
         }
         return null;
     }
@@ -177,7 +168,7 @@ public class ConsoleUploadServlet extends HttpServlet {
             }
             return dirList.toString();
         } catch (Exception e) {
-            System.out.println("Upload/getListing: " + e.getMessage());
+            System.out.println("consoleUpload/getListing: " + e.getMessage());
         }
         return "Oops, nothing is here.";
     }
@@ -196,7 +187,7 @@ public class ConsoleUploadServlet extends HttpServlet {
             }
             return false;
         } catch (Exception e) {
-            System.out.println("Upload/checkPoster: " + e.getMessage());
+            System.out.println("consoleUpload/checkPoster: " + e.getMessage());
         }
         return false;
     }
@@ -214,7 +205,7 @@ public class ConsoleUploadServlet extends HttpServlet {
             String username = rs.getString("userId");
             return username.equals(currentUser);
         } catch (Exception e) {
-            System.out.println("Upload/checkUsername: " + e.getMessage());
+            System.out.println("consoleUpload/checkUsername: " + e.getMessage());
         }
         return false;
     }

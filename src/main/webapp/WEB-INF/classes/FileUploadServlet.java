@@ -24,15 +24,11 @@ public class FileUploadServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         boolean isLoggedIn = isLoggedIn(request);
         if (!isLoggedIn) {
-//            response.setStatus(302);
-//            response.sendRedirect("login");
-            currentUser = "guest";
+            response.setStatus(302);
+            response.sendRedirect("login");
         } else {
             currentUser = session.getAttribute("USER_ID").toString();
-            //close else statement to test without session
-        }
-//            String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
-            String loginMsg = "Logged in as: " + currentUser;
+            String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
             PrintWriter writer = response.getWriter();
             writer.append("<!DOCTYPE html>\r\n")
                     .append("<html>\r\n")
@@ -60,25 +56,14 @@ public class FileUploadServlet extends HttpServlet {
             writer.append("</div>");
             writer.append("</form>");
             writer.append("</body>\r\n").append("</html>\r\n");
-
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        boolean isLoggedIn = isLoggedIn(request);
-        if (!isLoggedIn) {
-//            response.setStatus(302);
-//            response.sendRedirect("login");
-            currentUser = "guest";
-        } else {
-            currentUser = session.getAttribute("USER_ID").toString();
-            //close else statement to test without session
-        }
 
         Path path = Paths.get(System.getProperty("user.home") + "/images/");
-
         Files.createDirectories(path);
 
         Part filePart = request.getPart("fileName");
@@ -86,34 +71,25 @@ public class FileUploadServlet extends HttpServlet {
         String formDate = request.getParameter("date");
         String fileName = filePart.getSubmittedFileName();
 
-//        if (fileName.equals("")) {
-//            response.setStatus(302);
-//            response.sendRedirect("upload");
-//            System.out.println("return to upload");
-//            return;
-//        }
+        if (fileName.equals("")) {
+            response.setStatus(302);
+            response.sendRedirect("upload");
+            return;
+        }
 
         if (formDate.equals("")) formDate = String.valueOf(LocalDate.now());
         if (captionName.equals("")) captionName = "No caption";
         String localPath = System.getProperty("user.home") + "/images/" + fileName;
         filePart.write(localPath);
 
-        PrintWriter out = response.getWriter();
-        writeToDatabase(out, fileName, captionName, formDate, localPath, currentUser);
+        writeToDatabase(fileName, captionName, formDate, localPath);
 
         response.setContentType("text/html");
-
+        PrintWriter out = response.getWriter();
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
         out.println("<ul>" + getListing() + "</ul>");
-
-        /////////POST testing/////////
-        out.println(fileName);
-        out.println(captionName);
-        out.println(formDate);
-        /////////POST testing/////////
-
         out.println("<br />\n");
         out.println("<div>");
         out.println("<form action='main' method='get'>");
@@ -123,14 +99,12 @@ public class FileUploadServlet extends HttpServlet {
         out.println(bottomPart);
     }
 
-    public void writeToDatabase(PrintWriter out, String fileName, String captionName, String formDate, String localPath, String currentUser) {
-        out.println("writeToDB");
+    public void writeToDatabase(String fileName, String captionName, String formDate, String localPath) {
         try {
             con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             FileInputStream fin = new FileInputStream(localPath);
-            out.println(fileName + " " + captionName + " " + formDate + " " + localPath + " " + currentUser);
 
             preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
             preparedStatement.setBytes(2, getUuid(currentUser));
