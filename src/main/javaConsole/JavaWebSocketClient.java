@@ -24,9 +24,6 @@ public class JavaWebSocketClient {
         ) {
             String fromServer;
             out.println("GET /chat?username=Guest HTTP/1.1\r\nHost: comp3940-photogallery.herokuapp.com\r\n\r\n");
-            while ((fromServer = in.readLine()) != null) {
-                System.out.println(fromServer);
-            }
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
