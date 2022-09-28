@@ -42,7 +42,7 @@ public class ConsoleUploadServlet extends HttpServlet {
                 .append(loginMsg)
                 .append("\n</div>");
         writer.append("<h1>Upload file</h1>\r\n");
-        writer.append("<form method=\"POST\" action=\"upload\" ")
+        writer.append("<form method=\"POST\" action=\"consoleUpload\" ")
                 .append("enctype=\"multipart/form-data\">\r\n");
         writer.append("<input type=\"file\" name=\"fileName\"/><br/><br/>\r\n");
         writer.append("Caption: <input type=\"text\" name=\"caption\"<br/><br/>\r\n");
