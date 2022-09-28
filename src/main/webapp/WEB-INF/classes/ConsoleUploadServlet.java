@@ -1,4 +1,5 @@
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.*;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@MultipartConfig
 public class ConsoleUploadServlet extends HttpServlet {
     private Connection con = SetUp.getConnection();
     private String currentUser;
