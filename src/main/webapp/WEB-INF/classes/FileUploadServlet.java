@@ -98,7 +98,7 @@ public class FileUploadServlet extends HttpServlet {
         String localPath = System.getProperty("user.home") + "/images/" + fileName;
         filePart.write(localPath);
 
-        writeToDatabase(fileName, captionName, formDate, localPath);
+        writeToDatabase(fileName, captionName, formDate, localPath, currentUser);
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -122,7 +122,7 @@ public class FileUploadServlet extends HttpServlet {
         out.println(bottomPart);
     }
 
-    public void writeToDatabase(String fileName, String captionName, String formDate, String localPath) {
+    public void writeToDatabase(String fileName, String captionName, String formDate, String localPath, String currentUser) {
         try {
             con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(

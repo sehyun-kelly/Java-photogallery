@@ -117,7 +117,7 @@ public class HttpPostMultipart {
             multipart.addFormField("caption", "test_caption");
             multipart.addFormField("date", "test_date");
             // Add file
-            File file = new File("/Users/kelly/Desktop/cute.png");
+            File file = new File("/Users/kelly/Desktop/cutie.png");
             multipart.addFilePart("fileName", file);
             // Print result
             String response = multipart.finish();
