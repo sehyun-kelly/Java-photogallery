@@ -4,13 +4,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.UUID;
+import javax.servlet.http.Part;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.*;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
@@ -66,13 +67,13 @@ public class FileUploadServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         System.out.println("does it ever get here?");
-//        Path path = Paths.get(System.getProperty("user.home") + "/images/");
-//        Files.createDirectories(path);
+        Path path = Paths.get(System.getProperty("user.home") + "/images/");
+        Files.createDirectories(path);
 
-//        Part filePart = request.getPart("fileName");
+        Part filePart = request.getPart("fileName");
         String captionName = request.getParameter("caption");
         String formDate = request.getParameter("date");
-//        String fileName = filePart.getSubmittedFileName();
+        String fileName = filePart.getSubmittedFileName();
 
 //        if (fileName.equals("")) {
 //            response.setStatus(302);
@@ -80,25 +81,20 @@ public class FileUploadServlet extends HttpServlet {
 //            System.out.println("return to upload");
 //            return;
 //        }
-//
-//        if (formDate.equals("")) formDate = String.valueOf(LocalDate.now());
-//        if (captionName.equals("")) captionName = "No caption";
-//        String localPath = System.getProperty("user.home") + "/images/" + fileName;
-//        filePart.write(localPath);
-//
-//        writeToDatabase(fileName, captionName, formDate, localPath);
+
+        if (formDate.equals("")) formDate = String.valueOf(LocalDate.now());
+        if (captionName.equals("")) captionName = "No caption";
+        String localPath = System.getProperty("user.home") + "/images/" + fileName;
+        filePart.write(localPath);
+
+        writeToDatabase(fileName, captionName, formDate, localPath);
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
-//        out.println("<ul>" + getListing() + "</ul>");
-
-        ////////////post test///////////
-        out.println(captionName);
-        out.println(formDate);
-        //////////////////////////////
+        out.println("<ul>" + getListing() + "</ul>");
         out.println("<br />\n");
         out.println("<div>");
         out.println("<form action='main' method='get'>");

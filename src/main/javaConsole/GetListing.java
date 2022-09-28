@@ -4,7 +4,7 @@ import java.util.*;
 
     
 public class GetListing {
-    private static String PARAM = "caption=doggie&date=2022-09-27";
+    private static String PARAM = "fileName=dog.png&caption=doggie&date=2022-09-27";
 
     public static void main(String[] args) throws Exception{
         sendPOST();
@@ -49,8 +49,27 @@ public class GetListing {
 //            if (response != null && response.length() > 0) {
 //                System.out.println(response);
 //            }
+
             int responseCode = conn.getResponseCode();
             System.out.println("code: " + responseCode);
+
+            if (responseCode == HttpURLConnection.HTTP_OK) { //success
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                        conn.getInputStream()));
+                String inputLine;
+                StringBuffer response = new StringBuffer();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                // print result
+                System.out.println(response.toString());
+            } else {
+                System.out.println("POST request not worked");
+            }
+
         } catch (Exception e) {
             System.err.println("Web Access:" + e.getMessage());
         }
