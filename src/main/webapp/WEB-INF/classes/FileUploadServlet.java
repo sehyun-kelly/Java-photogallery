@@ -4,14 +4,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.UUID;
 
 @MultipartConfig
 public class FileUploadServlet extends HttpServlet {
@@ -66,14 +66,14 @@ public class FileUploadServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.println("does it ever get here?");
-        Path path = Paths.get(System.getProperty("user.home") + "/images/");
-        Files.createDirectories(path);
-
-        Part filePart = request.getPart("fileName");
+//        Path path = Paths.get(System.getProperty("user.home") + "/images/");
+//        Files.createDirectories(path);
+//
+//        Part filePart = request.getPart("fileName");
         String captionName = request.getParameter("caption");
         String formDate = request.getParameter("date");
-        String fileName = filePart.getSubmittedFileName();
+//        String fileName = filePart.getSubmittedFileName();
+        String fileName = "";
 
 //        if (fileName.equals("")) {
 //            response.setStatus(302);
@@ -85,9 +85,9 @@ public class FileUploadServlet extends HttpServlet {
         if (formDate.equals("")) formDate = String.valueOf(LocalDate.now());
         if (captionName.equals("")) captionName = "No caption";
         String localPath = System.getProperty("user.home") + "/images/" + fileName;
-        filePart.write(localPath);
+//        filePart.write(localPath);
 
-//        writeToDatabase(fileName, captionName, formDate, localPath);
+        writeToDatabase(fileName, captionName, formDate, localPath);
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
