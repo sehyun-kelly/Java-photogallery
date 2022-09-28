@@ -21,6 +21,7 @@ public class GetListing {
         try {
             URL url = new URL("https://comp3940-photogallery.herokuapp.com/upload");
             conn = (HttpURLConnection) url.openConnection();
+//            conn.setRequestProperty("Accept", "application/json");
 
             System.out.println("conn");
             conn.setRequestMethod("POST");

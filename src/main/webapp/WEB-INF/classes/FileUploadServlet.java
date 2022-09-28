@@ -66,6 +66,17 @@ public class FileUploadServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        boolean isLoggedIn = isLoggedIn(request);
+        if (!isLoggedIn) {
+//            response.setStatus(302);
+//            response.sendRedirect("login");
+            currentUser = "guest";
+        } else {
+            currentUser = session.getAttribute("USER_ID").toString();
+            //close else statement to test without session
+        }
+
         Path path = Paths.get(System.getProperty("user.home") + "/images/");
 
         Files.createDirectories(path);
@@ -95,7 +106,7 @@ public class FileUploadServlet extends HttpServlet {
         String bottomPart = "</body></html>";
         out.println(topPart);
         out.println("<ul>" + getListing() + "</ul>");
-        out.println(path);
+
         /////////POST testing/////////
         out.println(fileName);
         out.println(captionName);

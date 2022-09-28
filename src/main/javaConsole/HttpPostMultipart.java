@@ -42,7 +42,7 @@ public class HttpPostMultipart {
      * @param name  field name
      * @param value field value
      */
-    public void addFormField(String name, String value) {
+    public void addFormField(String name, String value) throws IOException {
         writer.append("--" + boundary).append(LINE);
         writer.append("Content-Disposition: form-data; name=\"" + name + "\"").append(LINE);
         writer.append("Content-Type: text/plain; charset=" + charset).append(LINE);
@@ -69,7 +69,7 @@ public class HttpPostMultipart {
         writer.flush();
 
         FileInputStream inputStream = new FileInputStream(uploadFile);
-        byte[] buffer = new byte[4096];
+        byte[] buffer = new byte[16777216];
         int bytesRead = -1;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
             outputStream.write(buffer, 0, bytesRead);
@@ -117,9 +117,8 @@ public class HttpPostMultipart {
             multipart.addFormField("caption", "test_caption");
             multipart.addFormField("date", "test_date");
             // Add file
-            File file = new File("/Users/kelly/Desktop/cat.png");
+            File file = new File("/Users/kelly/Desktop/cute.png");
             multipart.addFilePart("fileName", file);
-            System.out.println(file.getAbsolutePath());
             // Print result
             String response = multipart.finish();
             System.out.println(response);
