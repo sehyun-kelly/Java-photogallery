@@ -36,12 +36,12 @@ public class ChatServlet extends HttpServlet {
 //            if (request.getParameter("username") == null) {
 //                response.sendRedirect("login");
 //            } else {
-//                username.add("Guest");
+                username.add("Guest");
 //            }
 //        } else {
 //            username.add(session.getAttribute("USER_ID").toString());
 //        }
-        username.add(session.getAttribute("USER_ID").toString());
+//        username.add(session.getAttribute("USER_ID").toString());
         String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
         String html = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" +
