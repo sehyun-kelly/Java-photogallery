@@ -98,10 +98,11 @@ public class FileUploadServlet extends HttpServlet {
         String localPath = System.getProperty("user.home") + "/images/" + fileName;
         filePart.write(localPath);
 
-        writeToDatabase(fileName, captionName, formDate, localPath, currentUser);
+        PrintWriter out = response.getWriter();
+        writeToDatabase(out, fileName, captionName, formDate, localPath, currentUser);
 
         response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
+
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
@@ -122,12 +123,14 @@ public class FileUploadServlet extends HttpServlet {
         out.println(bottomPart);
     }
 
-    public void writeToDatabase(String fileName, String captionName, String formDate, String localPath, String currentUser) {
+    public void writeToDatabase(PrintWriter out, String fileName, String captionName, String formDate, String localPath, String currentUser) {
+        out.println("writeToDB");
         try {
             con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             FileInputStream fin = new FileInputStream(localPath);
+            out.println(fileName + " " + captionName + " " + formDate + " " + localPath + " " + currentUser);
 
             preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
             preparedStatement.setBytes(2, getUuid(currentUser));

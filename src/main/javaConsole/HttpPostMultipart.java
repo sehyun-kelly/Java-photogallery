@@ -115,7 +115,7 @@ public class HttpPostMultipart {
             HttpPostMultipart multipart = new HttpPostMultipart("https://comp3940-photogallery.herokuapp.com/upload", "utf-8");
             // Add form field
             multipart.addFormField("caption", "test_caption");
-            multipart.addFormField("date", "test_date");
+            multipart.addFormField("date", "2021-07-14");
             // Add file
             File file = new File("/Users/kelly/Desktop/cutie.png");
             multipart.addFilePart("fileName", file);
