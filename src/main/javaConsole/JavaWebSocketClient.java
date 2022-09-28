@@ -15,11 +15,23 @@ import java.lang.Thread;
 public class JavaWebSocketClient {
 
     public static void main(String[] args) throws Exception {
-//        HttpPostMultipart multipart = new HttpPostMultipart("https://comp3940-photogallery.herokuapp.com/chat", "utf-8");
-//        // Add form field
-//        multipart.addFormField("username", "Guest");
-//        String response = multipart.finish();
-//        System.out.println(response);
+        try (
+                Socket kkSocket = new Socket("comp3940-photogallery.herokuapp.com", 80);
+                PrintWriter out =
+                        new PrintWriter(kkSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(kkSocket.getInputStream()));
+        ) {
+            String fromServer;
+            out.println("GET /chat?username=Guest HTTP/1.1\r\nHost: comp3940-photogallery.herokuapp.com\r\n\r\n");
+            while ((fromServer = in.readLine()) != null) {
+                System.out.println(fromServer);
+            }
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         Scanner scanner = new Scanner(System.in);
         CountDownLatch latch = new CountDownLatch(1);
         WebSocket ws = HttpClient
@@ -29,12 +41,12 @@ public class JavaWebSocketClient {
                 .join();
         System.out.println("Enter your chat. Quit or Q to quit.");
         String userchat = "Guest has joined the chat";
-        while (!userchat.equalsIgnoreCase("quit") && !userchat.equalsIgnoreCase("q")) {
+        while (!(userchat.equalsIgnoreCase("quit") || userchat.equalsIgnoreCase("q"))) {
             ws.sendText(userchat, true);
             userchat = scanner.nextLine().trim();
         }
         latch.await();
-        Thread.sleep(10000);
+        Thread.sleep(1000);
     }
 
     private static class WebSocketClient implements WebSocket.Listener {

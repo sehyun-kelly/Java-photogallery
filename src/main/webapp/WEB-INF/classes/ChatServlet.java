@@ -33,12 +33,11 @@ public class ChatServlet extends HttpServlet {
         boolean isLoggedIn = isLoggedIn(request);
         String loginMsg = "No user is logged in";
         if (!isLoggedIn) {
-//            response.setStatus(302);
             if (request.getParameter("username") != null) {
-                username.add("Guest");
+                username.add(request.getParameter("username"));
             } else {
-//                response.sendRedirect("login");
-                username.add("Guest null");
+                response.setStatus(302);
+                response.sendRedirect("login");
             }
         } else {
             username.add(session.getAttribute("USER_ID").toString());
