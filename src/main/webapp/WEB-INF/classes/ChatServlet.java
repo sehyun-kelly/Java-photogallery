@@ -31,18 +31,19 @@ public class ChatServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession(false);
         boolean isLoggedIn = isLoggedIn(request);
-//        if (!isLoggedIn) {
+        String loginMsg = "No user is logged in";
+        if (!isLoggedIn) {
 //            response.setStatus(302);
-//            if (request.getParameter("username") == null) {
-//                response.sendRedirect("login");
-//            } else {
+            if (request.getParameter("username") != null) {
                 username.add("Guest");
-//            }
-//        } else {
-//            username.add(session.getAttribute("USER_ID").toString());
-//        }
-//        username.add(session.getAttribute("USER_ID").toString());
-        String loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
+            } else {
+//                response.sendRedirect("login");
+                username.add("Guest null");
+            }
+        } else {
+            username.add(session.getAttribute("USER_ID").toString());
+            loginMsg = "Logged in as: " + session.getAttribute("USER_ID");
+        }
         String html = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n" +
                 "<head>\n" +
