@@ -87,14 +87,21 @@ public class FileUploadServlet extends HttpServlet {
         String localPath = System.getProperty("user.home") + "/images/" + fileName;
         filePart.write(localPath);
 
-        writeToDatabase(fileName, captionName, formDate, localPath);
+//        writeToDatabase(fileName, captionName, formDate, localPath);
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
         String bottomPart = "</body></html>";
         out.println(topPart);
-        out.println("<ul>" + getListing() + "</ul>");
+//        out.println("<ul>" + getListing() + "</ul>");
+
+        /////////POST testing/////////
+        out.println(fileName);
+        out.println(captionName);
+        out.println(formDate);
+        /////////POST testing/////////
+
         out.println("<br />\n");
         out.println("<div>");
         out.println("<form action='main' method='get'>");
