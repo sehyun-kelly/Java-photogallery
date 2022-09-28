@@ -4,7 +4,7 @@ import java.util.*;
 
     
 public class GetListing {
-    private static String PARAM = "fileName=dog.PNG&caption=doggie&date=2022-09-27";
+    private static String PARAM = "caption=doggie&date=2022-09-27";
 
     public static void main(String[] args) throws Exception{
         sendPOST();
@@ -21,20 +21,19 @@ public class GetListing {
         try {
             URL url = new URL("https://comp3940-photogallery.herokuapp.com/upload");
             conn = (HttpURLConnection) url.openConnection();
+
             System.out.println("conn");
             conn.setRequestMethod("POST");
 //            conn.connect();
-            System.out.println("connect");
+//            System.out.println("connect");
 
             conn.setDoOutput(true);
-            System.out.println("setdooutput");
-            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
-            os.write(PARAM);
-            System.out.println("os write");
+            OutputStream os = conn.getOutputStream();
+            os.write(PARAM.getBytes());
             os.flush();
-            System.out.println("os flush");
-//            os.close();
-            System.out.println("os close");
+            os.close();
+            System.out.println("close");
+
 
 //            InputStream inputStream = conn.getInputStream();
 //            System.out.println("inputstream");
@@ -50,6 +49,8 @@ public class GetListing {
 //            if (response != null && response.length() > 0) {
 //                System.out.println(response);
 //            }
+            int responseCode = conn.getResponseCode();
+            System.out.println("code: " + responseCode);
         } catch (Exception e) {
             System.err.println("Web Access:" + e.getMessage());
         }
