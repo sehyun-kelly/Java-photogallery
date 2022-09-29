@@ -87,7 +87,7 @@ public class HttpPostMultipart {
      * @throws IOException
      */
     public String finish() throws IOException {
-        String response = "";
+        String response = "Files you have uploaded: \n";
         writer.flush();
         writer.append("--" + boundary + "--").append(LINE);
         writer.close();
@@ -101,7 +101,8 @@ public class HttpPostMultipart {
             while ((length = httpConn.getInputStream().read(buffer)) != -1) {
                 result.write(buffer, 0, length);
             }
-            response = result.toString(this.charset);
+            response += result.toString(this.charset);
+
             httpConn.disconnect();
         } else {
             throw new IOException("Server returned non-OK status: " + status);
@@ -124,7 +125,7 @@ public class HttpPostMultipart {
     }
 
     private String getCaption(Scanner scanner){
-        System.out.println("Please enter the caption for your image: ");
+        System.out.println("\nPlease enter the caption for your image: ");
         String caption = scanner.nextLine();
 
         return caption;
@@ -132,7 +133,7 @@ public class HttpPostMultipart {
 
     private String getDate(Scanner scanner){
         final int DATE_LENGTH = 10;
-        System.out.println("Please enter the date: ");
+        System.out.println("\nPlease enter the date: ");
         System.out.println("Ex) 2022-09-24 ");
         String date = scanner.nextLine();
 
@@ -183,7 +184,7 @@ public class HttpPostMultipart {
             multipart.addFilePart("fileName", file);
             // Print result
             String response = multipart.finish();
-            System.out.println(response);
+            System.out.println("\n" + response);
         } catch (Exception e) {
             e.printStackTrace();
         }

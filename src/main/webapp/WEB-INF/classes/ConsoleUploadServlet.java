@@ -89,7 +89,7 @@ public class ConsoleUploadServlet extends HttpServlet {
         filePart.write(localPath);
 
         PrintWriter out = response.getWriter();
-        writeToDatabase(out, fileName, captionName, formDate, localPath, currentUser);
+        writeToDatabase(fileName, captionName, formDate, localPath, currentUser);
 
         ArrayList<String> list = getListing();
 
@@ -101,7 +101,7 @@ public class ConsoleUploadServlet extends HttpServlet {
         out.flush();
     }
 
-    public void writeToDatabase(PrintWriter out, String fileName, String captionName, String formDate, String localPath, String currentUser) {
+    public void writeToDatabase(String fileName, String captionName, String formDate, String localPath, String currentUser) {
         try {
             con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
@@ -117,7 +117,6 @@ public class ConsoleUploadServlet extends HttpServlet {
 
             preparedStatement.executeUpdate();
             preparedStatement.close();
-            out.println("Upload completed!");
         } catch (Exception e) {
             System.out.println("consoleUpload/writeToDatabase: " + e.getMessage());
         }
