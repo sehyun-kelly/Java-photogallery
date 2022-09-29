@@ -1,5 +1,4 @@
 import com.google.gson.Gson;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.*;
@@ -93,27 +92,6 @@ public class ConsoleUploadServlet extends HttpServlet {
         writeToDatabase(out, fileName, captionName, formDate, localPath, currentUser);
 
         ArrayList<String> list = getListing();
-
-        response.setContentType("text/html");
-
-        String topPart = "<!DOCTYPE html><html><body><div style=\"text-align: right;\">Logged in as: " + currentUser + "</div>";
-        String bottomPart = "</body></html>";
-        out.println(topPart);
-
-        out.println("<div>Just Uploaded: ");
-        out.println(fileName);
-        out.println(captionName);
-        out.println(formDate);
-        out.println("</div>");
-
-//        out.println("<ul>" + list + "</ul>");
-//        out.println("<br />\n");
-//        out.println("<div>");
-//        out.println("<form action='main' method='get'>");
-//        out.println("<button class='button' id='main'>Main</button>");
-//        out.println("</div>");
-//        out.println("</form>");
-//        out.println(bottomPart);
 
         gson = new Gson();
         String fileListString = this.gson.toJson(list);

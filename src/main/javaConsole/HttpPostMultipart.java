@@ -3,6 +3,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import java.time.format.*;
 
 public class HttpPostMultipart {
     private final String boundary;
@@ -135,16 +136,23 @@ public class HttpPostMultipart {
         System.out.println("Ex) 2022-09-24 ");
         String date = scanner.nextLine();
 
-        while(date.length() != DATE_LENGTH
-                || (date.split("-")[0].length() != 4
-                || date.split("-")[1].length() != 2
-                || date.split("-")[2].length() != 2)
-                || !date.contains("-")){
+        while(!isDateValid(date)){
             System.out.println("Wrong date format! Please enter the date in ####-##-## format: ");
             date = scanner.nextLine();
         }
 
         return date;
+    }
+    private static boolean isDateValid(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd", Locale.US)
+                .withResolverStyle(ResolverStyle.STRICT);
+
+        try{
+            formatter.parse(date);
+        }catch (DateTimeParseException e){
+            return false;
+        }
+        return true;
     }
 
     private HashMap<String, String> getParams(){
