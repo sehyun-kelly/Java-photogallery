@@ -5,10 +5,12 @@ import javax.servlet.http.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
@@ -17,12 +19,12 @@ import java.util.UUID;
 
 @MultipartConfig
 public class ConsoleUploadServlet extends HttpServlet {
-    private Connection con = SetUp.getConnection();
+    private static Connection con;
     private String currentUser;
-    private Gson gson;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
+        con = getConnection();
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession(false);
@@ -66,6 +68,7 @@ public class ConsoleUploadServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        con = getConnection();
         HttpSession session = request.getSession(false);
         boolean isLoggedIn = isLoggedIn(request);
         if (!isLoggedIn) {
@@ -93,8 +96,8 @@ public class ConsoleUploadServlet extends HttpServlet {
 
         ArrayList<String> list = getListing();
 
-        gson = new Gson();
-        String fileListString = this.gson.toJson(list);
+        Gson gson = new Gson();
+        String fileListString = gson.toJson(list);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         out.println(fileListString);
@@ -103,12 +106,12 @@ public class ConsoleUploadServlet extends HttpServlet {
 
     public void writeToDatabase(String fileName, String captionName, String formDate, String localPath, String currentUser) {
         try {
-            con = SetUp.getConnection();
+            con = getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             FileInputStream fin = new FileInputStream(localPath);
 
-            preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
+            preparedStatement.setBytes(1, asBytes(UUID.randomUUID()));
             preparedStatement.setBytes(2, getUuid(currentUser));
             preparedStatement.setBinaryStream(3, fin);
             preparedStatement.setString(4, fileName);
@@ -122,9 +125,16 @@ public class ConsoleUploadServlet extends HttpServlet {
         }
     }
 
+    public static byte[] asBytes(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
+    }
+
     public byte[] getUuid(String userId) {
         try {
-            con = SetUp.getConnection();
+            con = getConnection();
             PreparedStatement s = con.prepareStatement("SELECT * FROM Users WHERE userId = ?;");
             s.setString(1, userId);
 
@@ -143,19 +153,9 @@ public class ConsoleUploadServlet extends HttpServlet {
         ArrayList<String> fileList = new ArrayList<>();
 
         try {
-            con = SetUp.getConnection();
+            con = getConnection();
             PreparedStatement s = con.prepareStatement("SELECT fileName FROM Photos;");
             ResultSet rs = s.executeQuery();
-
-//            StringBuilder dirList = new StringBuilder("Files you have posted:");
-//            while (rs.next()) {
-//                if (checkPoster(rs.getString("fileName"))){
-//                    dirList.append("<li>").append(rs.getString("fileName")).append("</li>");
-//                }
-//            }
-//
-//            return dirList.toString();
-
             while(rs.next()){
                 if (checkPoster(rs.getString("fileName"))){
                     fileList.add(rs.getString("fileName"));
@@ -171,7 +171,7 @@ public class ConsoleUploadServlet extends HttpServlet {
 
     private boolean checkPoster(String fileName) {
         try {
-            con = SetUp.getConnection();
+            con = getConnection();
             PreparedStatement s = con.prepareStatement("SELECT userId FROM Photos WHERE fileName = ?;");
             s.setString(1, fileName);
 
@@ -190,7 +190,7 @@ public class ConsoleUploadServlet extends HttpServlet {
 
     private boolean checkUsername(byte[] uuid) {
         try {
-            con = SetUp.getConnection();
+            con = getConnection();
             PreparedStatement s = con.prepareStatement("SELECT userId FROM Users WHERE id = ?;");
             s.setBytes(1, uuid);
 
@@ -210,5 +210,22 @@ public class ConsoleUploadServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
 
         return session != null && req.isRequestedSessionIdValid();
+    }
+
+    public static Connection getConnection() {
+        try {
+            if (con != null && con.isValid(0)) return con;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("SetUp/getCurrentConnection: " + e.getMessage());
+        }
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://us-cdbr-east-06.cleardb.net/heroku_a7d042695ca2198", "b62388eed31a05", "866f0c06");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("SetUp/getNewConnection: " + e.getMessage());
+        }
+        return con;
     }
 }
