@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.*;
@@ -11,12 +13,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @MultipartConfig
 public class ConsoleUploadServlet extends HttpServlet {
     private Connection con = SetUp.getConnection();
     private String currentUser;
+    private Gson gson;
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html");
@@ -77,14 +82,7 @@ public class ConsoleUploadServlet extends HttpServlet {
         Part filePart = request.getPart("fileName");
         String captionName = request.getParameter("caption");
         String formDate = request.getParameter("date");
-        String fileName = filePart.getSubmittedFileName();
-
-//        if (fileName.equals("")) {
-//            response.setStatus(302);
-//            response.sendRedirect("upload");
-//            System.out.println("return to upload");
-//            return;
-//        }
+        String fileName = filePart.getSubmittedFileName() + "_" + captionName + "_" + formDate;
 
         if (formDate.equals("")) formDate = String.valueOf(LocalDate.now());
         if (captionName.equals("")) captionName = "No caption";
@@ -93,6 +91,8 @@ public class ConsoleUploadServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         writeToDatabase(out, fileName, captionName, formDate, localPath, currentUser);
+
+        ArrayList<String> list = getListing();
 
         response.setContentType("text/html");
 
@@ -106,24 +106,29 @@ public class ConsoleUploadServlet extends HttpServlet {
         out.println(formDate);
         out.println("</div>");
 
-        out.println("<ul>" + getListing() + "</ul>");
-        out.println("<br />\n");
-        out.println("<div>");
-        out.println("<form action='main' method='get'>");
-        out.println("<button class='button' id='main'>Main</button>");
-        out.println("</div>");
-        out.println("</form>");
-        out.println(bottomPart);
+//        out.println("<ul>" + list + "</ul>");
+//        out.println("<br />\n");
+//        out.println("<div>");
+//        out.println("<form action='main' method='get'>");
+//        out.println("<button class='button' id='main'>Main</button>");
+//        out.println("</div>");
+//        out.println("</form>");
+//        out.println(bottomPart);
+
+        gson = new Gson();
+        String fileListString = this.gson.toJson(list);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        out.println(fileListString);
+        out.flush();
     }
 
     public void writeToDatabase(PrintWriter out, String fileName, String captionName, String formDate, String localPath, String currentUser) {
-        out.println("write to db");
         try {
             con = SetUp.getConnection();
             PreparedStatement preparedStatement = con.prepareStatement(
                     "INSERT INTO Photos (id, userId, picture, fileName, caption, dateTaken) VALUES (?,?,?,?,?,?)");
             FileInputStream fin = new FileInputStream(localPath);
-            out.println(fileName + " " + captionName + " " + formDate + " " + localPath + " " + currentUser);
 
             preparedStatement.setBytes(1, UuidGenerator.asBytes(UUID.randomUUID()));
             preparedStatement.setBytes(2, getUuid(currentUser));
@@ -134,6 +139,7 @@ public class ConsoleUploadServlet extends HttpServlet {
 
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            out.println("Upload completed!");
         } catch (Exception e) {
             System.out.println("consoleUpload/writeToDatabase: " + e.getMessage());
         }
@@ -156,23 +162,34 @@ public class ConsoleUploadServlet extends HttpServlet {
         return null;
     }
 
-    private String getListing() {
+    private ArrayList<String> getListing() {
+        ArrayList<String> fileList = new ArrayList<>();
+
         try {
             con = SetUp.getConnection();
             PreparedStatement s = con.prepareStatement("SELECT fileName FROM Photos;");
             ResultSet rs = s.executeQuery();
 
-            StringBuilder dirList = new StringBuilder("Files you have posted:");
-            while (rs.next()) {
+//            StringBuilder dirList = new StringBuilder("Files you have posted:");
+//            while (rs.next()) {
+//                if (checkPoster(rs.getString("fileName"))){
+//                    dirList.append("<li>").append(rs.getString("fileName")).append("</li>");
+//                }
+//            }
+//
+//            return dirList.toString();
+
+            while(rs.next()){
                 if (checkPoster(rs.getString("fileName"))){
-                    dirList.append("<li>").append(rs.getString("fileName")).append("</li>");
+                    fileList.add(rs.getString("fileName"));
                 }
             }
-            return dirList.toString();
+
         } catch (Exception e) {
             System.out.println("consoleUpload/getListing: " + e.getMessage());
         }
-        return "Oops, nothing is here.";
+
+        return fileList;
     }
 
     private boolean checkPoster(String fileName) {
