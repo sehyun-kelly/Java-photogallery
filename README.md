@@ -1,11 +1,15 @@
-# COMP-3940 Assignment 1
+# Java Photogallery
 
-#### Group 3
+https://github.com/sehyun-kelly/Java-photogallery/assets/89621420/a2e9ac32-6fb0-48db-8614-0d528b9fff3b
+
+
+https://github.com/sehyun-kelly/Java-photogallery/assets/89621420/45cb730b-9c16-4d36-9086-a042ec6fefcf
+
+
+
+#### Comp 3940 | Assignment 1
 Term: Set 3G, Fall 2022 \
 Members: Chengyang Li, Sehyun Park, Alex Pu, Melanie Ta, Shen Yen
-
-### Project Link
-https://comp3940-photogallery.herokuapp.com/login
 
 ### Description
 - This app allows you to upload images, view images in the gallery, search images, and chat with other users! 
